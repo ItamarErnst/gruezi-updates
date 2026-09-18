@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- viewport-fit=cover so the safe-area insets work on a notched iPhone. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grüezi — Swiss German</title>
+<meta name="description" content="Learn everyday Zürich Swiss German the Language Transfer way: work it out yourself, then check.">
+<meta name="theme-color" content="#f7f6f2">
+
+<!-- Installing to the home screen: Android reads the manifest, iOS reads these. -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon-64.png" sizes="64x64">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Grüezi">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preload" href="assets/fonts/nunito-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- The shell is rendered by app.js; this is what shows while it loads. -->
+<div id="app">
+  <div class="empty" style="margin:auto">
+    <p class="muted">Loading…</p>
+  </div>
+</div>
+
+<noscript>
+  <div class="empty" style="margin:auto">
+    <h3>JavaScript is off</h3>
+    <p class="muted">Grüezi keeps your deck in the browser, so it needs JavaScript to run.</p>
+  </div>
+</noscript>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

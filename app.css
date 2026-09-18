@@ -1,0 +1,710 @@
+/*
+ * Grüezi on the web.
+ *
+ * Same design system as the Android app: the "Alpine" palette from
+ * `ui/Theme.kt`, Nunito, generous radii, and buttons that sit on a solid slab
+ * so they read as physical keys. Tokens first, then components — a colour is
+ * never written as a literal below the `:root` blocks.
+ */
+
+/* --- font ------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('assets/fonts/nunito-var.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- tokens ----------------------------------------------------------- */
+
+:root {
+  --green: #4ea981;
+  --green-deep: #357c5d;
+  --green-soft: #e2f2ea;
+  --sky: #5baedb;
+  --sky-soft: #e2f0f8;
+  --heather: #9a8bd0;
+  --heather-soft: #ede9f8;
+  --apricot: #efa45c;
+  --apricot-soft: #fbeedf;
+  --coral: #e4786e;
+
+  --bg: #f7f6f2;
+  --card: #ffffff;
+  --card-alt: #eff1ec;
+  --ink: #23302a;
+  --ink-soft: #6e7f76;
+  --line: #e6e9e4;
+
+  --primary: var(--green);
+  --on-primary: #ffffff;
+  --primary-container: var(--green-soft);
+  --on-primary-container: #15402c;
+
+  /* The four Anki keys. */
+  --g-again: var(--coral);
+  --g-hard: var(--apricot);
+  --g-good: var(--green);
+  --g-easy: var(--sky);
+
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 24px;
+  --r-xl: 28px;
+  --depth: 4px;
+
+  --gutter: 16px;
+  --maxw: 560px;
+}
+
+/* Night: the same hues, darkened, never pure black. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --green: #6fd0a3;
+    --green-deep: #3e8a67;
+    --green-soft: #204a38;
+    --sky: #79c2ea;
+    --sky-soft: #1c3143;
+    --heather: #b4a6e8;
+    --heather-soft: #2e2748;
+    --apricot: #f5be81;
+    --apricot-soft: #3e3125;
+    --coral: #ee9086;
+
+    --bg: #141a17;
+    --card: #1e2622;
+    --card-alt: #28312c;
+    --ink: #e8efea;
+    --ink-soft: #9aaaa1;
+    --line: #2e3a34;
+
+    --on-primary: #07281a;
+    --primary-container: #204a38;
+    --on-primary-container: #bfebd6;
+  }
+}
+
+:root[data-theme='dark'] {
+  --green: #6fd0a3;
+  --green-deep: #3e8a67;
+  --green-soft: #204a38;
+  --sky: #79c2ea;
+  --sky-soft: #1c3143;
+  --heather: #b4a6e8;
+  --heather-soft: #2e2748;
+  --apricot: #f5be81;
+  --apricot-soft: #3e3125;
+  --coral: #ee9086;
+
+  --bg: #141a17;
+  --card: #1e2622;
+  --card-alt: #28312c;
+  --ink: #e8efea;
+  --ink-soft: #9aaaa1;
+  --line: #2e3a34;
+
+  --on-primary: #07281a;
+  --primary-container: #204a38;
+  --on-primary-container: #bfebd6;
+}
+
+/* --- base ------------------------------------------------------------- */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+h1, h2, h3 { font-weight: 800; margin: 0; line-height: 1.2; }
+h1 { font-size: 1.7rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+
+.muted { color: var(--ink-soft); }
+.small { font-size: 0.86rem; }
+.center { text-align: center; }
+
+/* Screen-reader-only, for labels an icon carries visually. */
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* --- app shell -------------------------------------------------------- */
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top) + 10px) var(--gutter) 10px;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar h1 { font-size: 1.3rem; }
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+main {
+  flex: 1;
+  padding: 0 var(--gutter) 24px;
+  min-width: 0;
+}
+
+/* Bottom navigation — three destinations, the selected one in its own accent. */
+.bottomnav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 4px;
+  background: var(--card);
+  border-top: 2px solid var(--line);
+  padding: 8px var(--gutter) calc(env(safe-area-inset-bottom) + 8px);
+  z-index: 10;
+}
+
+.navitem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border: 0;
+  background: none;
+  padding: 4px 16px;
+  border-radius: 18px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+
+.navitem .bubble {
+  display: grid;
+  place-items: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background 160ms ease;
+}
+
+.navitem svg { width: 24px; height: 24px; }
+.navitem span { font-size: 0.7rem; font-weight: 700; }
+
+.navitem[aria-current='page'] { color: var(--nav-accent, var(--primary)); }
+.navitem[aria-current='page'] .bubble {
+  background: color-mix(in srgb, var(--nav-accent, var(--primary)) 16%, transparent);
+}
+.navitem[data-tab='learn'] { --nav-accent: var(--sky); }
+.navitem[data-tab='bridges'] { --nav-accent: var(--heather); }
+
+/* --- primitives ------------------------------------------------------- */
+
+.card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 18px;
+}
+
+.card.tappable { cursor: pointer; }
+.card.tappable:active { transform: translateY(1px); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--card-alt);
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 0;
+  white-space: nowrap;
+}
+
+.pill svg { width: 14px; height: 14px; }
+button.pill { cursor: pointer; }
+.pill.accent { background: var(--primary-container); color: var(--on-primary-container); }
+.pill.filled { background: var(--primary); color: var(--on-primary); }
+.pill.bridges { background: var(--heather-soft); color: var(--heather); }
+.pill.sky { background: var(--sky-soft); color: var(--sky); }
+.pill.streak { background: var(--apricot-soft); color: var(--apricot); }
+
+/* The roundel used for toolbar and inline icon actions. */
+.iconbtn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--card-alt);
+  color: var(--ink-soft);
+  cursor: pointer;
+  flex: none;
+}
+
+.iconbtn svg { width: 18px; height: 18px; }
+.iconbtn:active { transform: translateY(1px); }
+.iconbtn.ghost { background: transparent; }
+
+.bubble-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  flex: none;
+}
+.bubble-icon svg { width: 22px; height: 22px; }
+
+/*
+ * The chunky button: a flat face on a darker slab. Pressing shifts the face
+ * down onto the slab, so the footprint never changes and nothing reflows.
+ */
+.chunky {
+  --c: var(--primary);
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  height: 56px;
+}
+
+.chunky .slab {
+  position: absolute;
+  inset: var(--depth) 0 0 0;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--c) 78%, #000);
+}
+
+.chunky .face {
+  position: absolute;
+  inset: 0 0 var(--depth) 0;
+  border-radius: 18px;
+  background: var(--c);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.92rem;
+  transition: inset 70ms ease;
+}
+
+.chunky:active .face { inset: var(--depth) 0 0 0; }
+.chunky:disabled { opacity: 0.45; cursor: default; }
+.chunky:disabled:active .face { inset: 0 0 var(--depth) 0; }
+.chunky svg { width: 20px; height: 20px; }
+
+.ghostbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 18px;
+  border-radius: 16px;
+  border: 2px solid var(--line);
+  background: none;
+  color: var(--ink-soft);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.ghostbtn svg { width: 18px; height: 18px; }
+.ghostbtn:active { transform: translateY(1px); }
+
+.track {
+  flex: 1;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--card-alt);
+  overflow: hidden;
+}
+
+.track > div {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+  transition: width 400ms ease;
+}
+
+.row { display: flex; align-items: center; gap: 10px; }
+.row.between { justify-content: space-between; }
+.row.wrap { flex-wrap: wrap; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+/* --- the grade keys --------------------------------------------------- */
+
+.grades {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+
+.gradekey {
+  position: relative;
+  height: 60px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.gradekey .slab {
+  position: absolute;
+  inset: var(--depth) 0 0 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--c) 76%, #000);
+}
+
+.gradekey .face {
+  position: absolute;
+  inset: 0 0 var(--depth) 0;
+  border-radius: 16px;
+  background: var(--c);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  transition: inset 70ms ease;
+}
+
+.gradekey:active .face { inset: var(--depth) 0 0 0; }
+.gradekey .label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
+.gradekey .interval { font-size: 0.68rem; opacity: 0.82; }
+
+.gradekey[data-grade='AGAIN'] { --c: var(--g-again); }
+.gradekey[data-grade='HARD'] { --c: var(--g-hard); }
+.gradekey[data-grade='GOOD'] { --c: var(--g-good); }
+.gradekey[data-grade='EASY'] { --c: var(--g-easy); }
+
+/* --- the practice card ------------------------------------------------ */
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.banner.new { color: var(--primary); }
+.banner.step { color: var(--apricot); }
+.banner.due { color: var(--sky); }
+.banner.extra { color: var(--ink-soft); }
+
+.sentence-card {
+  text-align: center;
+  padding: 24px 20px;
+}
+
+.sentence-card .dialect {
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin: 18px 0 0;
+  overflow-wrap: break-word;
+}
+
+.sentence-card .dialect.answer { color: var(--primary); }
+.sentence-card .prompt-natural { font-size: 1.6rem; font-weight: 800; line-height: 1.3; margin-top: 18px; }
+.sentence-card .phonetics { color: var(--ink-soft); font-size: 0.95rem; letter-spacing: 0.02em; margin-top: 8px; }
+.sentence-card .literal { font-style: italic; color: var(--ink-soft); font-size: 1.05rem; }
+.sentence-card .natural { font-size: 1.3rem; font-weight: 700; }
+
+.reveal-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.reveal-hint svg { width: 18px; height: 18px; }
+
+.answer-block { margin-top: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+.note {
+  display: flex;
+  gap: 10px;
+  text-align: left;
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--apricot-soft);
+  font-size: 0.95rem;
+}
+
+.note svg { width: 18px; height: 18px; color: var(--apricot); flex: none; margin-top: 2px; }
+
+/* --- lists: lessons and bridges --------------------------------------- */
+
+.lesson-row { display: flex; gap: 12px; }
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 44px;
+  flex: none;
+}
+
+.rail .connector { width: 3px; height: 14px; background: var(--line); }
+.rail .connector.hidden { visibility: hidden; }
+
+.rail .node {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--card-alt);
+  color: var(--ink-soft);
+  font-weight: 800;
+}
+
+.rail .node.done { background: var(--sky); color: #fff; }
+.rail .node.next { background: var(--primary); color: #fff; }
+.rail .node svg { width: 20px; height: 20px; }
+
+.lesson-row .card { flex: 1; margin-bottom: 8px; padding: 14px 16px; }
+.lesson-row.has-connector .card { margin-top: 14px; }
+.lesson-row .card.next { border-color: var(--primary); }
+
+.list-row { display: flex; align-items: center; gap: 14px; }
+.list-row .grow { flex: 1; min-width: 0; }
+.list-row .chev { width: 18px; height: 18px; color: var(--ink-soft); flex: none; }
+
+/* --- bridges ---------------------------------------------------------- */
+
+.rule-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--r-md);
+  background: var(--heather-soft);
+  color: var(--heather);
+  font-weight: 700;
+}
+
+.rule-box svg { width: 22px; height: 22px; flex: none; }
+
+.example {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 2px solid var(--card-alt);
+  background: var(--card-alt);
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.example.revealed {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--heather) 40%, transparent);
+  cursor: default;
+}
+
+.example .prompt { font-weight: 600; }
+.example .answer { font-weight: 800; font-size: 1.1rem; color: var(--heather); text-align: right; }
+
+/* --- the teach block in a lesson -------------------------------------- */
+
+.teach {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--r-md);
+  background: var(--sky-soft);
+}
+
+.teach svg { width: 20px; height: 20px; color: var(--sky); flex: none; margin-top: 2px; }
+
+/* --- dialogs ---------------------------------------------------------- */
+
+dialog {
+  border: 0;
+  border-radius: var(--r-xl);
+  padding: 0;
+  background: var(--card);
+  color: var(--ink);
+  max-width: min(440px, calc(100vw - 32px));
+  width: 100%;
+}
+
+dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
+.dialog-body { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.dialog-body h2 { text-align: center; }
+
+.setting { display: flex; align-items: center; gap: 12px; }
+.setting .grow { flex: 1; }
+
+/* A switch, built from a checkbox so it stays keyboard-operable. */
+.switch { position: relative; width: 50px; height: 30px; flex: none; }
+.switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.switch .slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--card-alt);
+  transition: background 160ms ease;
+  pointer-events: none;
+}
+.switch .slider::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 160ms ease;
+}
+.switch input:checked + .slider { background: var(--primary); }
+.switch input:checked + .slider::after { transform: translateX(20px); }
+
+/* --- the streak calendar ---------------------------------------------- */
+
+.streak-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--r-lg);
+  background: var(--apricot-soft);
+}
+
+.streak-hero .bubble-icon { background: color-mix(in srgb, var(--apricot) 20%, transparent); color: var(--apricot); }
+.streak-hero h3 { color: var(--apricot); }
+
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.calendar .dow { text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); }
+
+.calendar .day {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+
+.calendar .day.today { outline: 2px solid var(--primary); outline-offset: -2px; font-weight: 800; color: var(--primary); }
+.calendar .day.complete { background: var(--apricot); color: #fff; outline: 0; }
+.calendar .day.complete svg { width: 15px; height: 15px; }
+.calendar .day.future { color: color-mix(in srgb, var(--ink-soft) 45%, transparent); }
+
+/* --- forms ------------------------------------------------------------ */
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field label { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); }
+
+.field input, .field textarea {
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.field input:focus, .field textarea:focus { outline: 0; border-color: var(--primary); }
+
+.chipset { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+
+/* --- empty / loading states ------------------------------------------- */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.empty .bubble-icon { width: 72px; height: 72px; }
+.empty .bubble-icon svg { width: 34px; height: 34px; }
+
+/* Honour a reduced-motion preference — the press animations are decorative. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

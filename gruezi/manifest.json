@@ -1,0 +1,27 @@
+{
+  "channel": "gruezi",
+  "generated": "2026-09-18T16:03:44+00:00",
+  "content": {
+    "version": 1,
+    "files": {
+      "sentences.json": {
+        "path": "content/sentences.json",
+        "sha256": "196639175d2a4c5f8b64834aa70459c7cf50ab8b94635413416da8c50957ddfd",
+        "bytes": 16967,
+        "entries": 79
+      },
+      "bridges.json": {
+        "path": "content/bridges.json",
+        "sha256": "a5811b98333ee42049442e9d7169e7f5be411ba1da721bc66de118cda572033b",
+        "bytes": 9392,
+        "entries": 17
+      },
+      "lessons.json": {
+        "path": "content/lessons.json",
+        "sha256": "4768625e1dc9505c299d8edeee00c535776f8174d9c3882259da37d74ff69a48",
+        "bytes": 4110,
+        "entries": 6
+      }
+    }
+  }
+}
