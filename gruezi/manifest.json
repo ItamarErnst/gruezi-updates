@@ -1,6 +1,6 @@
 {
   "channel": "gruezi",
-  "generated": "2026-09-18T16:03:44+00:00",
+  "generated": "2026-09-18T16:04:19+00:00",
   "content": {
     "version": 1,
     "files": {
@@ -23,5 +23,13 @@
         "entries": 6
       }
     }
+  },
+  "app": {
+    "versionCode": 3,
+    "versionName": "0.3",
+    "notes": "Content and app updates now arrive over the air, plus the redesign and the new SRS practice loop.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.3/gruezi-3.apk",
+    "sha256": "72b4681372aae50d72adbb02375ff7fafdea93145b140b5aeebdc59a76560761",
+    "bytes": 31947367
   }
 }
