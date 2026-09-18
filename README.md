@@ -9,8 +9,9 @@ build it was meant for:
 | Channel | App | Manifest |
 |---|---|---|
 | `gruezi/` | Grüezi — Swiss German | [manifest.json](gruezi/manifest.json) |
-| `ciao/` | Ciao — Italian | published from the `italian` branch |
-| `shalom/` | Shalom — Hebrew | published from the `hebrew` branch |
+| `ciao/` | Ciao — Italian | [manifest.json](ciao/manifest.json) |
+| `shalom/` | Shalom — Hebrew | [manifest.json](shalom/manifest.json) |
+| `hoi/` | Hoi — Dutch | [manifest.json](hoi/manifest.json) |
 
 A manifest names the current content files with their SHA-256, and the current
 APK — which lives on the [releases page](../../releases), not in this repo, so

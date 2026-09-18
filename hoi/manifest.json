@@ -1,0 +1,35 @@
+{
+  "channel": "hoi",
+  "generated": "2026-09-18T16:27:16+00:00",
+  "content": {
+    "version": 1,
+    "files": {
+      "sentences.json": {
+        "path": "content/sentences.json",
+        "sha256": "e53e43d90484f0d22070108b7039f21638d77bfda439391e86d24c55c58ed09c",
+        "bytes": 17447,
+        "entries": 81
+      },
+      "bridges.json": {
+        "path": "content/bridges.json",
+        "sha256": "27cef734a4e221ded957156daf9aaae863aca022edb99184bd3dde588e7dc49a",
+        "bytes": 11514,
+        "entries": 21
+      },
+      "lessons.json": {
+        "path": "content/lessons.json",
+        "sha256": "9754720e301decebb708174fb0d41c9bbf828e2a5d4db9ea0dd3f830f11ebc9e",
+        "bytes": 8373,
+        "entries": 7
+      }
+    }
+  },
+  "app": {
+    "versionCode": 1,
+    "versionName": "0.1",
+    "notes": "First release: 21 bridges, 7 lessons and 81 sentences of everyday Dutch.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.1/hoi-1.apk",
+    "sha256": "48d731df29afb8793ca01808e16d19411ab3ea080e4af44d9ef778fbbdcea820",
+    "bytes": 30985461
+  }
+}

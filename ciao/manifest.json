@@ -1,0 +1,35 @@
+{
+  "channel": "ciao",
+  "generated": "2026-09-18T16:27:05+00:00",
+  "content": {
+    "version": 1,
+    "files": {
+      "sentences.json": {
+        "path": "content/sentences.json",
+        "sha256": "34c48636063579b6776474de087d7947b5a1f3dcfb5eba8ef85aa14b7c957e14",
+        "bytes": 22646,
+        "entries": 97
+      },
+      "bridges.json": {
+        "path": "content/bridges.json",
+        "sha256": "f92ca71c9b1cb6d17d56de887c7dfab709213fa3819ed0c493dbdacff3ba09c0",
+        "bytes": 18344,
+        "entries": 24
+      },
+      "lessons.json": {
+        "path": "content/lessons.json",
+        "sha256": "241b93489cbf9a13a44e82046f6193a521340d70c10d35fe10afedb549bf1854",
+        "bytes": 10578,
+        "entries": 8
+      }
+    }
+  },
+  "app": {
+    "versionCode": 2,
+    "versionName": "0.2",
+    "notes": "The redesign, a real practice loop, and updates that arrive on their own from now on.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/ciao-v0.2/ciao-2.apk",
+    "sha256": "047971681191174c8b549371c0adf5ee6452e0815447ade92107b4b86acca8f9",
+    "bytes": 30991277
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "channel": "shalom",
+  "generated": "2026-09-18T16:27:10+00:00",
+  "content": {
+    "version": 1,
+    "files": {
+      "sentences.json": {
+        "path": "content/sentences.json",
+        "sha256": "47935939021cca9cfa9afd806ea0449b75721384981a8e8512c8b6303c2989fe",
+        "bytes": 8573,
+        "entries": 45
+      },
+      "bridges.json": {
+        "path": "content/bridges.json",
+        "sha256": "badd28ee6f2b244b741acf6fee4cd9c77142a2e223626ae24d59ac46cdf91318",
+        "bytes": 4746,
+        "entries": 8
+      },
+      "lessons.json": {
+        "path": "content/lessons.json",
+        "sha256": "179f8b99b051e352361e1dbfac6b3dba13deb6570bb8d073e79277abe215c5a6",
+        "bytes": 2692,
+        "entries": 3
+      }
+    }
+  },
+  "app": {
+    "versionCode": 2,
+    "versionName": "0.2",
+    "notes": "The redesign, a real practice loop, and updates that arrive on their own from now on.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.2/shalom-2.apk",
+    "sha256": "8f095ab2afc5330505bdb8697d343a64c46668ff45c0ab42ee153bf19e28e151",
+    "bytes": 30976965
+  }
+}
