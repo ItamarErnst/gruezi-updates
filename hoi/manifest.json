@@ -1,6 +1,6 @@
 {
   "channel": "hoi",
-  "generated": "2026-09-19T10:34:02+00:00",
+  "generated": "2026-09-19T12:03:19+00:00",
   "content": {
     "version": 1,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 2,
-    "versionName": "0.2",
-    "notes": "Your old Got it / Tricky sentences are recovered, three grade buttons instead of four, and a fresh deck stops repeating itself.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.2/hoi-2.apk",
-    "sha256": "260fd380dcfeafc285146292ef630686d1c498fc1a01f7b4ffcaf93a82711b9c",
+    "versionCode": 3,
+    "versionName": "0.3",
+    "notes": "Repeats in one session no longer stretch a card's schedule; adding an entry asks for less.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.3/hoi-3.apk",
+    "sha256": "5c6ec268aa754454eaf5c4c072020d539a277ab062fa34e8152000de38038939",
     "bytes": 31050997
   }
 }

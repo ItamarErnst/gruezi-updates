@@ -1,14 +1,14 @@
 {
   "channel": "gruezi",
-  "generated": "2026-09-19T10:34:02+00:00",
+  "generated": "2026-09-19T12:03:19+00:00",
   "content": {
-    "version": 2,
+    "version": 3,
     "files": {
       "sentences.json": {
         "path": "content/sentences.json",
-        "sha256": "cd9afc504bc924c9e2115f947cd940c6415623e7cad5f8e081edc948b4341f98",
-        "bytes": 32313,
-        "entries": 145
+        "sha256": "778012be3f8382c38f8e793150e846a7d7230fd36349b157cf4e36c49a049ab8",
+        "bytes": 37987,
+        "entries": 169
       },
       "bridges.json": {
         "path": "content/bridges.json",
@@ -18,18 +18,18 @@
       },
       "lessons.json": {
         "path": "content/lessons.json",
-        "sha256": "c23a3ca46dc9517dd59c72963940c5bf1733336caac0bf3975a538864a5446cd",
-        "bytes": 11814,
-        "entries": 12
+        "sha256": "eb4ef7039eeec0490e7bfc5736f8594143b2cb8e064fabc209d221c996329af1",
+        "bytes": 13642,
+        "entries": 13
       }
     }
   },
   "app": {
-    "versionCode": 5,
-    "versionName": "0.5",
-    "notes": "Your old Got it / Tricky sentences are recovered, three grade buttons instead of four, and a fresh deck stops repeating itself.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.5/gruezi-5.apk",
-    "sha256": "f72f9101fcfeb5b32804b540bd4e78952b8484ec165cd05adc64d3bb5b4c70fe",
-    "bytes": 31881283
+    "versionCode": 6,
+    "versionName": "0.6",
+    "notes": "Repeats in one session no longer stretch a card's schedule; adding an entry asks for less.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.6/gruezi-6.apk",
+    "sha256": "740e5c4b1dc2104e2c5d41aaf4f35cc116a86a06c91d56c14971701954619aa0",
+    "bytes": 31883819
   }
 }

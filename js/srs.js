@@ -48,6 +48,9 @@ export function newCard() {
     due: 0,
     reps: 0,
     lapses: 0,
+    // Epoch day this card was last graded, 0 if never. Stops a second look on
+    // the same day from stretching the interval — see ReviewStore.grade.
+    gradedDay: 0,
   };
 }
 

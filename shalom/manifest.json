@@ -1,8 +1,8 @@
 {
   "channel": "shalom",
-  "generated": "2026-09-19T10:34:02+00:00",
+  "generated": "2026-09-19T12:03:19+00:00",
   "content": {
-    "version": 1,
+    "version": 2,
     "files": {
       "sentences.json": {
         "path": "content/sentences.json",
@@ -12,24 +12,24 @@
       },
       "bridges.json": {
         "path": "content/bridges.json",
-        "sha256": "badd28ee6f2b244b741acf6fee4cd9c77142a2e223626ae24d59ac46cdf91318",
-        "bytes": 4746,
+        "sha256": "acfdd6fcd39dd5f75cb084a4b6090c29e8457ecd52fa7461ddd0d9c6a32725e0",
+        "bytes": 5004,
         "entries": 8
       },
       "lessons.json": {
         "path": "content/lessons.json",
-        "sha256": "179f8b99b051e352361e1dbfac6b3dba13deb6570bb8d073e79277abe215c5a6",
-        "bytes": 2692,
+        "sha256": "3375436fa89233af9195a8179d0568668a1eec07de75f797d1cfc6163f2658dd",
+        "bytes": 2693,
         "entries": 3
       }
     }
   },
   "app": {
-    "versionCode": 3,
-    "versionName": "0.3",
-    "notes": "Your old Got it / Tricky sentences are recovered, three grade buttons instead of four, and a fresh deck stops repeating itself.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.3/shalom-3.apk",
-    "sha256": "ec5542b201481cadae841b2830b942ee1412972af4d3e1d007e16dbd3bbb1a85",
-    "bytes": 31042501
+    "versionCode": 4,
+    "versionName": "0.4",
+    "notes": "Repeats in one session no longer stretch a card's schedule; adding an entry asks for less.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.4/shalom-4.apk",
+    "sha256": "150d3067e3323854e66faa0e8190cd15d760bfd0951837a781bd3efc0cfd4830",
+    "bytes": 31042753
   }
 }

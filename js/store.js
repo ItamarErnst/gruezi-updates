@@ -10,7 +10,7 @@
 
 import {
   Grade, Mode, Phase, newCard, grade as gradeCard, isDue,
-  nowMinute, dayStartMinute, epochDay,
+  nowMinute, dayStartMinute, epochDay, MINUTES_PER_DAY,
 } from './srs.js';
 
 /**
@@ -168,8 +168,41 @@ export class ReviewStore {
     return this.dueQueue(ids, now).length;
   }
 
+  /** Has this card already been graded today, in this mode? */
+  wasGradedToday(id, mode, dayStart = dayStartMinute()) {
+    const c = this.cards[ReviewStore.key(id, mode)];
+    if (!c) return false;
+    return c.reps > 0 && c.gradedDay === Math.floor(dayStart / MINUTES_PER_DAY);
+  }
+
+  /**
+   * Grade a card and persist the new schedule.
+   *
+   * **A second grade on the same day can only make the schedule worse.** The
+   * rotation deals seen cards again as free practice, and a card met ten minutes
+   * ago feels easy — that is the last minute talking, not the last week. Without
+   * this, each repeat re-applied the ease multiplier and three looks in one
+   * session compounded the interval roughly fifteen-fold.
+   *
+   * So a graduated card already graded today ignores another Medium or Easy and
+   * only counts the repetition. Hard always applies: forgetting is real
+   * information whenever it turns up, and it moves the card the safe way.
+   * Learning and relearning steps are exempt — those short steps are the
+   * within-session mechanic, and blocking them would strand a card mid-session.
+   */
   grade(id, mode, g, now = nowMinute()) {
-    const next = gradeCard(this.card(id, mode), g, now, dayStartMinute());
+    const dayStart = dayStartMinute();
+    const today = Math.floor(dayStart / MINUTES_PER_DAY);
+    const current = this.card(id, mode);
+    const repeatPractice = current.phase === Phase.REVIEW
+      && current.gradedDay === today
+      && current.reps > 0
+      && g !== Grade.HARD;
+
+    const next = repeatPractice
+      ? { ...current, reps: current.reps + 1 }
+      : { ...gradeCard(current, g, now, dayStart), gradedDay: today };
+
     this.cards[ReviewStore.key(id, mode)] = next;
     this.save();
     return next;

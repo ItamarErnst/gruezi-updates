@@ -410,13 +410,18 @@ class App {
     });
   }
 
+  /**
+   * Add a word or sentence by hand — the web twin of `AddEntry.kt`.
+   *
+   * No level chooser: that's a question the person adding a word can't usefully
+   * answer, since they're adding it because they just met it, not because they've
+   * placed it on a scale. It joins the level they're learning. A **word** also
+   * skips the word-for-word field, because a single word's gloss *is* its meaning.
+   */
   showAddEntry() {
-    const levels = LEVELS.map((l) =>
-      `<button type="button" class="chip" data-level="${l}"
-        aria-pressed="${l === this.prefs.get('level')}">${l}</button>`).join('');
-
-    const field = (name, label, placeholder) => `
-      <div class="field">
+    const level = this.prefs.get('level');
+    const field = (name, label, placeholder = '') => `
+      <div class="field" data-field="${name}">
         <label for="f-${name}">${esc(label)}</label>
         <input id="f-${name}" name="${name}" placeholder="${esc(placeholder)}" autocomplete="off">
       </div>`;
@@ -426,40 +431,52 @@ class App {
         <h2 style="text-align:left">Add an entry</h2>
         ${iconButton('close', 'Cancel', 'close-dialog')}
       </div>
-      <div>
-        <p class="section-label" style="margin-bottom:8px">Level</p>
-        <div class="chipset">${levels}</div>
+      <div class="chipset">
+        <button type="button" class="chip" data-kind="SENTENCE" aria-pressed="true">Sentence</button>
+        <button type="button" class="chip" data-kind="WORD" aria-pressed="false">Word</button>
       </div>
-      ${field('dialect', this.lang.target, '')}
-      ${field('literal', 'Word-for-word (English)', '')}
-      ${field('natural', 'Meaning (English)', '')}
-      ${field('note', 'Note (optional)', '')}
+      ${field('dialect', this.lang.target)}
+      ${field('literal', 'Word-for-word (English)')}
+      ${field('natural', 'Meaning (English)')}
+      <p class="section-label" style="margin-bottom:0">Optional</p>
+      ${field('phonetics', this.lang.phoneticsLabel)}
+      ${field('note', 'Note')}
+      <p class="small muted">Joins ${esc(level)}, the level you're learning.</p>
       ${chunky('Save', 'save-entry')}
     `);
 
-    let level = this.prefs.get('level');
+    let kind = 'SENTENCE';
+    const literalField = dlg.querySelector('[data-field="literal"]');
+
     dlg.addEventListener('click', (e) => {
-      const chip = e.target.closest('[data-level]');
+      const chip = e.target.closest('[data-kind]');
       if (chip) {
-        level = chip.dataset.level;
-        for (const c of dlg.querySelectorAll('[data-level]')) {
-          c.setAttribute('aria-pressed', String(c.dataset.level === level));
+        kind = chip.dataset.kind;
+        for (const c of dlg.querySelectorAll('[data-kind]')) {
+          c.setAttribute('aria-pressed', String(c.dataset.kind === kind));
         }
+        literalField.hidden = kind === 'WORD';
       }
       if (e.target.closest('[data-action="close-dialog"]')) dlg.close();
       if (e.target.closest('[data-action="save-entry"]')) {
         const value = (n) => dlg.querySelector(`[name="${n}"]`).value.trim();
         const dialect = value('dialect');
-        const literal = value('literal');
         const natural = value('natural');
-        if (!dialect || !literal || !natural) {
-          dlg.querySelector('[name="dialect"]').focus();
+        const literal = value('literal');
+        const isWord = kind === 'WORD';
+        if (!dialect || !natural || (!isWord && !literal)) {
+          dlg.querySelector(!dialect ? '[name="dialect"]' : '[name="natural"]').focus();
           return;
         }
         this.repo.userEntries.add({
-          level, dialect, literal, natural,
+          level,
+          dialect,
+          // A word's word-for-word line is its meaning.
+          literal: isWord ? natural : literal,
+          natural,
+          kind,
+          phonetics: value('phonetics') || undefined,
           note: value('note') || undefined,
-          kind: 'SENTENCE',
         });
         dlg.close();
         this.views.daily.nextCard();

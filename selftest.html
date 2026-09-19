@@ -124,6 +124,37 @@ ok('every channel names its three buttons',
      return l.gradeHard && l.gradeMedium && l.gradeEasy;
    }));
 
+// --- same-day repeats don't inflate the schedule ---------------------------
+// The rotation re-deals seen cards, and one met ten minutes ago feels easy —
+// that's the last minute talking, not the last week.
+{
+  const store2 = await import('./js/store.js');
+  localStorage.clear();
+  store2.useChannel('gruezi');
+  const rs = new store2.ReviewStore();
+  rs.grade('a1-001', srs.Mode.READ, srs.Grade.MEDIUM);
+  rs.grade('a1-001', srs.Mode.READ, srs.Grade.MEDIUM);   // graduates
+  const after = rs.card('a1-001', srs.Mode.READ);
+  eq('it graduated', after.phase, srs.Phase.REVIEW);
+
+  rs.grade('a1-001', srs.Mode.READ, srs.Grade.EASY);
+  rs.grade('a1-001', srs.Mode.READ, srs.Grade.EASY);
+  rs.grade('a1-001', srs.Mode.READ, srs.Grade.EASY);
+  const repeated = rs.card('a1-001', srs.Mode.READ);
+  eq('three same-day Easys cannot stretch the interval', repeated.intervalDays, after.intervalDays);
+  eq('nor the ease', repeated.ease, after.ease);
+  ok('but the practice is counted', repeated.reps > after.reps);
+  ok('wasGradedToday sees it', rs.wasGradedToday('a1-001', srs.Mode.READ));
+
+  const lapsed = rs.grade('a1-001', srs.Mode.READ, srs.Grade.HARD);
+  eq('Hard on a repeat still lapses it', lapsed.phase, srs.Phase.RELEARNING);
+  ok('and still costs ease', lapsed.ease < after.ease);
+
+  const back = rs.grade('a1-001', srs.Mode.READ, srs.Grade.MEDIUM);
+  eq('relearning still rejoins reviews in-session', back.phase, srs.Phase.REVIEW);
+  localStorage.clear();
+}
+
 // --- backup.js -------------------------------------------------------------
 // The only durable copy of a browser deck, so the property that matters is that
 // a bad file changes nothing.

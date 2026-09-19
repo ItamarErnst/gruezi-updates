@@ -6,7 +6,7 @@
  * so publishing a change rolls the cache over instead of serving a stale build.
  */
 
-const CACHE = 'gruezi-88a6b2d2b2c5';
+const CACHE = 'gruezi-3ef1fc756af9';
 const PRECACHE = [
   ".",
   "index.html",
