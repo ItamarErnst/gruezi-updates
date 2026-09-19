@@ -1,6 +1,6 @@
 {
   "channel": "shalom",
-  "generated": "2026-09-18T16:27:10+00:00",
+  "generated": "2026-09-19T10:34:02+00:00",
   "content": {
     "version": 1,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 2,
-    "versionName": "0.2",
-    "notes": "The redesign, a real practice loop, and updates that arrive on their own from now on.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.2/shalom-2.apk",
-    "sha256": "8f095ab2afc5330505bdb8697d343a64c46668ff45c0ab42ee153bf19e28e151",
-    "bytes": 30976965
+    "versionCode": 3,
+    "versionName": "0.3",
+    "notes": "Your old Got it / Tricky sentences are recovered, three grade buttons instead of four, and a fresh deck stops repeating itself.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.3/shalom-3.apk",
+    "sha256": "ec5542b201481cadae841b2830b942ee1412972af4d3e1d007e16dbd3bbb1a85",
+    "bytes": 31042501
   }
 }

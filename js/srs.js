@@ -8,10 +8,11 @@
  * the spec both sides are held to.
  */
 
+// Three buttons, not Anki's four — see Grade in Srs.kt for why. HARD carries both
+// "barely" and "didn't have it", so it lapses gently rather than to the floor.
 export const Grade = Object.freeze({
-  AGAIN: 'AGAIN',
   HARD: 'HARD',
-  GOOD: 'GOOD',
+  MEDIUM: 'MEDIUM',
   EASY: 'EASY',
 });
 
@@ -30,9 +31,9 @@ export const LEARNING_STEPS = [1, 10];      // minutes
 export const RELEARNING_STEPS = [10];       // minutes
 export const GRADUATING_INTERVAL = 1;       // days
 export const EASY_INTERVAL = 4;             // days
-export const HARD_MULTIPLIER = 1.2;
 export const EASY_BONUS = 1.3;
-export const LAPSE_MULTIPLIER = 0.0;
+// Halves rather than collapsing: HARD is also the "barely" button here.
+export const LAPSE_MULTIPLIER = 0.5;
 export const MAX_INTERVAL = 36500;
 
 export const MINUTES_PER_DAY = 1440;
@@ -116,15 +117,11 @@ function graduate(card, interval, reps, dayStart, rand) {
 function gradeLearning(card, g, now, dayStart, rand) {
   const reps = card.reps + 1;
   switch (g) {
-    case Grade.AGAIN:
-      // Back to the first step — it hasn't stuck yet.
+    case Grade.HARD:
+      // Back to the first step — it hasn't stuck yet. A new card has no interval
+      // to protect, so there is nothing gentle to be done here.
       return { ...card, step: 0, reps, due: now + LEARNING_STEPS[0] };
-    case Grade.HARD: {
-      // Hold position and try the same step again shortly.
-      const i = clamp(card.step, 0, LEARNING_STEPS.length - 1);
-      return { ...card, reps, due: now + LEARNING_STEPS[i] };
-    }
-    case Grade.GOOD: {
+    case Grade.MEDIUM: {
       const next = card.step + 1;
       if (next >= LEARNING_STEPS.length) {
         return graduate(card, GRADUATING_INTERVAL, reps, dayStart, rand);
@@ -139,12 +136,8 @@ function gradeLearning(card, g, now, dayStart, rand) {
 
 function gradeRelearning(card, g, now, dayStart, rand) {
   const reps = card.reps + 1;
-  if (g === Grade.AGAIN) {
-    return { ...card, step: 0, reps, due: now + RELEARNING_STEPS[0] };
-  }
   if (g === Grade.HARD) {
-    const i = clamp(card.step, 0, RELEARNING_STEPS.length - 1);
-    return { ...card, reps, due: now + RELEARNING_STEPS[i] };
+    return { ...card, step: 0, reps, due: now + RELEARNING_STEPS[0] };
   }
   const next = card.step + 1;
   if (g === Grade.EASY || next >= RELEARNING_STEPS.length) {
@@ -167,8 +160,9 @@ function gradeReview(card, g, now, dayStart, rand) {
   const reps = card.reps + 1;
   const current = Math.max(1, card.intervalDays);
 
-  if (g === Grade.AGAIN) {
-    // A lapse: lose ease, collapse the interval, drop into relearning.
+  if (g === Grade.HARD) {
+    // A soft lapse: lose ease, halve the interval, and come back inside the
+    // session. Collapsing it would punish a moment's hesitation with weeks.
     return {
       ...card,
       phase: Phase.RELEARNING,
@@ -182,14 +176,12 @@ function gradeReview(card, g, now, dayStart, rand) {
   }
 
   let ease = card.ease;
-  if (g === Grade.HARD) ease = adjustEase(ease, -150);
   if (g === Grade.EASY) ease = adjustEase(ease, +150);
   const easeFactor = ease / 1000;
 
-  let raw;
-  if (g === Grade.HARD) raw = Math.round(current * HARD_MULTIPLIER);
-  else if (g === Grade.GOOD) raw = Math.round(current * easeFactor);
-  else raw = Math.round(current * easeFactor * EASY_BONUS);
+  const raw = g === Grade.EASY
+    ? Math.round(current * easeFactor * EASY_BONUS)
+    : Math.round(current * easeFactor);
 
   // A pass always moves the card at least one day further out.
   const interval = cap(Math.max(raw, current + 1));
@@ -200,37 +192,4 @@ function gradeReview(card, g, now, dayStart, rand) {
     reps,
     due: dayStart + fuzzed(interval, rand) * MINUTES_PER_DAY,
   };
-}
-
-/** "3d", "2wk", "5mo", "1.4y" — Anki's compact interval labels. */
-export function formatDays(days) {
-  if (days < 7) return `${days}d`;
-  if (days < 30) return `${Math.floor(days / 7)}wk`;
-  if (days < 365) return `${Math.floor(days / 30)}mo`;
-  return `${(days / 365).toFixed(1)}y`;
-}
-
-/** "<1m", "10m", "2h" — for the intra-session learning steps. */
-export function formatMinutes(minutes) {
-  if (minutes < 1) return '<1m';
-  if (minutes < 60) return `${Math.round(minutes)}m`;
-  if (minutes < 1440) return `${Math.floor(minutes / 60)}h`;
-  return formatDays(Math.floor(minutes / 1440));
-}
-
-/**
- * What each button would do to this card, as a label for the UI.
- * Uses a fixed pseudo-random source so the preview doesn't flicker between
- * renders — the real grade re-rolls the fuzz.
- */
-export function previewLabels(card, now = nowMinute(), dayStart = dayStartMinute()) {
-  const stable = () => 0.5;
-  const out = {};
-  for (const g of Object.values(Grade)) {
-    const next = grade(card, g, now, dayStart, stable);
-    out[g] = next.phase === Phase.REVIEW
-      ? formatDays(next.intervalDays)
-      : formatMinutes(Math.max(1, next.due - now));
-  }
-  return out;
 }

@@ -92,3 +92,27 @@ export function screenHeading(title, body) {
 }
 
 export { icon };
+
+/**
+ * Render the `**bold**` runs in `text`, escaping everything else.
+ *
+ * The method explanation names the three grade buttons and those names want to
+ * stand out, so the strings in `lang.js` carry the lightest possible markup rather
+ * than being split into a parallel list of labels and bodies that a translator
+ * would then have to keep in step. Escaping happens per segment, so the markup
+ * can never be used to smuggle HTML through.
+ */
+export function emphasised(text) {
+  let out = '';
+  let i = 0;
+  while (i < text.length) {
+    const open = text.indexOf('**', i);
+    if (open < 0) { out += esc(text.slice(i)); break; }
+    const close = text.indexOf('**', open + 2);
+    if (close < 0) { out += esc(text.slice(i)); break; }
+    out += esc(text.slice(i, open));
+    out += `<strong>${esc(text.slice(open + 2, close))}</strong>`;
+    i = close + 2;
+  }
+  return out;
+}

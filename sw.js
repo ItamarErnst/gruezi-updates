@@ -6,7 +6,7 @@
  * so publishing a change rolls the cache over instead of serving a stale build.
  */
 
-const CACHE = 'gruezi-a326d331be33';
+const CACHE = 'gruezi-88a6b2d2b2c5';
 const PRECACHE = [
   ".",
   "index.html",
@@ -23,12 +23,24 @@ const PRECACHE = [
   "js/repo.js",
   "js/ui.js",
   "js/icons.js",
+  "js/lang.js",
+  "js/pace.js",
+  "js/backup.js",
   "js/views/daily.js",
   "js/views/learn.js",
   "js/views/bridges.js",
-  "data/sentences.json",
-  "data/bridges.json",
-  "data/lessons.json"
+  "data/gruezi/sentences.json",
+  "data/gruezi/bridges.json",
+  "data/gruezi/lessons.json",
+  "data/hoi/sentences.json",
+  "data/hoi/bridges.json",
+  "data/hoi/lessons.json",
+  "data/ciao/sentences.json",
+  "data/ciao/bridges.json",
+  "data/ciao/lessons.json",
+  "data/shalom/sentences.json",
+  "data/shalom/bridges.json",
+  "data/shalom/lessons.json"
 ];
 
 self.addEventListener('install', (event) => {

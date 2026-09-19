@@ -1,33 +1,48 @@
 /**
- * Grüezi on the web — the shell.
+ * The shell — and, unlike the phone builds, the shell for all four languages.
  *
- * Renders one of three views into <main>, handles every click by delegation
- * from the root, and owns the dialogs (settings, streak, add entry, the two
- * celebrations). There's no router: the tab and any open lesson/bridge are just
- * state, and the back button is wired to close whatever is open.
+ * On Android each language is its own APK off its own branch. Here they share one
+ * deploy: the learner picks a language on first run, that choice selects both the
+ * content folder and the storage namespace, and switching later is a reload rather
+ * than an install. Two languages can be learned side by side because their decks
+ * never share a key.
+ *
+ * Renders one of three views into <main>, handles every click by delegation from
+ * the root, and owns the dialogs (settings, streak, add entry, the celebrations).
+ * There's no router: the tab and any open lesson/bridge are just state, and the
+ * back button is wired to close whatever is open.
  */
 
 import { Repo, LEVELS } from './repo.js';
 import {
   ReviewStore, ReviewCycle, ProgressStore, Prefs, UserEntries,
   Grade, Mode, REVIEW_GOAL, epochDay,
+  useChannel, readChannel, writeChannel,
 } from './store.js';
+import { CHANNELS, DEFAULT_CHANNEL, isChannel, langFor } from './lang.js';
+import * as pace from './pace.js';
+import * as backup from './backup.js';
 import { DailyView } from './views/daily.js';
 import { LearnView } from './views/learn.js';
 import { BridgesView } from './views/bridges.js';
 import {
-  bubbleIcon, chunky, esc, ghostButton, icon, iconButton, pill,
+  bubbleIcon, chunky, emphasised, esc, ghostButton, icon, iconButton, pill,
 } from './ui.js';
 
-const TABS = [
-  { id: 'daily', label: 'Daily', icon: 'daily' },
-  { id: 'learn', label: 'Learn', icon: 'learn' },
-  { id: 'bridges', label: 'Bridges', icon: 'bridges' },
-];
+/** The third tab's name comes from the language — Hebrew calls it "Basics". */
+function tabsFor(lang) {
+  return [
+    { id: 'daily', label: 'Daily', icon: 'daily' },
+    { id: 'learn', label: 'Learn', icon: 'learn' },
+    { id: 'bridges', label: lang.bridgesTitle, icon: 'bridges' },
+  ];
+}
 
 class App {
-  constructor(repo) {
+  constructor(repo, lang) {
     this.repo = repo;
+    this.lang = lang;
+    this.channel = lang.channel;
     this.reviews = new ReviewStore();
     this.cycle = new ReviewCycle();
     this.progress = new ProgressStore();
@@ -36,6 +51,8 @@ class App {
 
     const ctx = {
       repo,
+      lang,
+      pace,
       reviews: this.reviews,
       cycle: this.cycle,
       progress: this.progress,
@@ -126,6 +143,15 @@ class App {
       case 'change-level':
         this.showLevelPicker();
         break;
+      case 'open-method':
+        this.showMethod();
+        break;
+      case 'export-data':
+        this.exportData();
+        break;
+      case 'import-data':
+        this.importData();
+        break;
       case 'play-audio':
         // No clips in the web build yet; the hook is here for when there are.
         break;
@@ -172,18 +198,55 @@ class App {
       `<button type="button" class="chip" data-theme-choice="${t}"
         aria-pressed="${p.get('theme') === t}">${t[0].toUpperCase()}${t.slice(1)}</button>`).join('');
 
+    const lang = this.lang;
+    const rate = p.get('newPerDay') ?? pace.AUTO;
+    const rates = [pace.AUTO, 1, 2, 3, 5, 10].map((n) =>
+      `<button type="button" class="chip" data-rate="${n}"
+        aria-pressed="${rate === n}">${n === pace.AUTO ? 'Auto' : n}</button>`).join('');
+
+    const languages = CHANNELS.map((ch) => {
+      const l = langFor(ch);
+      const current = ch === this.channel;
+      return `<button type="button" class="chip" data-language="${ch}"
+        aria-pressed="${current}">${l.flag} ${esc(l.pickerName)}</button>`;
+    }).join('');
+
     const dlg = this.openDialog(`
       <h2>Settings</h2>
-      ${toggle('phonetics', 'Show phonetics',
-        'An English-style respelling under the Swiss sentence — CAPS is the stressed syllable.')}
+      ${toggle('phonetics', lang.phoneticsSettingTitle, lang.phoneticsSettingSubtitle)}
+      <div>
+        <p class="section-label" style="margin-bottom:8px">New sentences a day</p>
+        <p class="small muted" style="margin-bottom:8px">${rate === pace.AUTO
+          ? `Auto: ${pace.SEED_RATE} a day while your deck is small, then ${pace.SETTLED_RATE}.`
+          : `${rate} a day, whatever the deck looks like.`}</p>
+        <div class="chipset">${rates}</div>
+      </div>
+      <div>
+        <p class="section-label" style="margin-bottom:8px">${esc(lang.methodTitle)}</p>
+        <p class="small muted" style="margin-bottom:8px">What ${esc(lang.gradeHard)},
+          ${esc(lang.gradeMedium)} and ${esc(lang.gradeEasy)} actually do to a sentence.</p>
+        ${ghostButton('Read it', 'open-method', { icon: 'eye' })}
+      </div>
       <div>
         <p class="section-label" style="margin-bottom:8px">Theme</p>
         <div class="chipset">${themes}</div>
       </div>
       <div>
+        <p class="section-label" style="margin-bottom:8px">Language</p>
+        <p class="small muted" style="margin-bottom:8px">Each keeps its own deck.
+          Switching reloads the app; nothing is lost.</p>
+        <div class="chipset">${languages}</div>
+      </div>
+      <div>
         <p class="section-label" style="margin-bottom:8px">Your deck</p>
-        <p class="small muted">Progress is stored in this browser only. Clearing site
-          data — or opening the link in a different browser — starts a fresh deck.</p>
+        <p class="small muted" style="margin-bottom:8px">Progress is stored in this
+          browser only. Clearing site data — or opening the link in a different
+          browser — starts a fresh deck, so keep a copy.</p>
+        <div class="row" style="gap:8px">
+          ${ghostButton('Save a copy', 'export-data', { icon: 'download' })}
+          ${ghostButton('Restore', 'import-data', { icon: 'undo' })}
+        </div>
+        <p class="small muted" id="backup-status" style="margin-top:8px"></p>
       </div>
       ${chunky('Done', 'close-dialog')}
     `);
@@ -204,8 +267,62 @@ class App {
           c.setAttribute('aria-pressed', String(c.dataset.themeChoice === p.get('theme')));
         }
       }
+
+      const rateBtn = e.target.closest('[data-rate]');
+      if (rateBtn) {
+        p.set('newPerDay', Number(rateBtn.dataset.rate));
+        dlg.close();
+        this.showSettings();     // redraw so the description matches the choice
+        return;
+      }
+
+      const langBtn = e.target.closest('[data-language]');
+      if (langBtn && langBtn.dataset.language !== this.channel) {
+        writeChannel(langBtn.dataset.language);
+        location.reload();
+        return;
+      }
+
       if (e.target.closest('[data-action="close-dialog"]')) dlg.close();
     });
+  }
+
+  /** "How this works" — the explanation that replaced the intervals on the buttons. */
+  showMethod() {
+    const paragraphs = this.lang.methodParagraphs
+      .map((t) => `<p class="muted">${emphasised(t)}</p>`)
+      .join('');
+    this.openDialog(`
+      <h2>${esc(this.lang.methodTitle)}</h2>
+      ${paragraphs}
+      ${chunky('Got it', 'close-dialog')}
+    `).addEventListener('click', (e) => {
+      if (e.target.closest('[data-action="close-dialog"]')) e.currentTarget.close();
+    });
+  }
+
+  exportData() {
+    const status = document.getElementById('backup-status');
+    try {
+      backup.download(backup.fileName(this.channel), backup.exportJson(this.channel));
+      if (status) status.textContent = "Saved. Keep it somewhere that isn't this browser.";
+    } catch (err) {
+      if (status) status.textContent = `Couldn't save it: ${err.message}`;
+    }
+  }
+
+  async importData() {
+    const status = document.getElementById('backup-status');
+    const text = await backup.pickFile();
+    if (text === null) return;
+    const result = backup.importJson(this.channel, text);
+    if (!result.ok) {
+      if (status) status.textContent = `Couldn't restore it — ${result.reason}.`;
+      return;
+    }
+    // Every store read its key on construction, so the running app is holding the
+    // old deck. Reload rather than show a stale one.
+    location.reload();
   }
 
   showStreak() {
@@ -313,9 +430,9 @@ class App {
         <p class="section-label" style="margin-bottom:8px">Level</p>
         <div class="chipset">${levels}</div>
       </div>
-      ${field('dialect', 'Züritüütsch', 'Ich cha cho.')}
-      ${field('literal', 'Word-for-word (English)', 'I can come.')}
-      ${field('natural', 'Meaning (English)', 'I can come.')}
+      ${field('dialect', this.lang.target, '')}
+      ${field('literal', 'Word-for-word (English)', '')}
+      ${field('natural', 'Meaning (English)', '')}
       ${field('note', 'Note (optional)', '')}
       ${chunky('Save', 'save-entry')}
     `);
@@ -375,17 +492,17 @@ class App {
 
 // --- boot ----------------------------------------------------------------
 
-function shell() {
-  const nav = TABS.map((t) => `
+function shell(lang) {
+  const nav = tabsFor(lang).map((t) => `
     <button type="button" class="navitem" data-tab="${t.id}"
       data-action="select-tab" data-arg="${t.id}">
       <span class="bubble">${icon(t.icon)}</span>
-      <span>${t.label}</span>
+      <span>${esc(t.label)}</span>
     </button>`).join('');
 
   return `
     <header class="topbar">
-      <h1>Grüezi</h1>
+      <h1>${esc(lang.appName)}</h1>
       <div class="topbar-actions">
         <button type="button" class="pill streak" data-action="open-streak">
           ${icon('flame')}<span id="streak-count">0</span>
@@ -398,13 +515,87 @@ function shell() {
     <nav class="bottomnav">${nav}</nav>`;
 }
 
+/**
+ * The first screen, when no language has been chosen yet.
+ *
+ * Shown instead of the app rather than as a dialog over it: there is nothing
+ * meaningful to render behind it, since every deck and every sentence depends on
+ * the answer.
+ */
+function renderPicker(root) {
+  const options = CHANNELS.map((ch) => {
+    const l = langFor(ch);
+    return `
+      <button type="button" class="langcard" data-action="pick-language" data-arg="${ch}">
+        <span class="langflag">${l.flag}</span>
+        <span class="langtext">
+          <strong>${esc(l.pickerName)}</strong>
+          <span class="small muted">${esc(l.pickerNote)}</span>
+        </span>
+      </button>`;
+  }).join('');
+
+  root.innerHTML = `
+    <div class="picker">
+      <h1>What do you want to learn?</h1>
+      <p class="muted">Each language keeps its own deck, so you can come back and
+        add another later without losing this one.</p>
+      <div class="langlist">${options}</div>
+    </div>`;
+}
+
+/**
+ * Right-to-left is a property of the sentences, not of the app.
+ *
+ * Hebrew is the only RTL language here, and its chrome is still English — the
+ * whole point of the project is that only the target language needs decoding. So
+ * the document stays LTR and `data-target-dir` lets the CSS flip just the lines
+ * that hold the language itself.
+ */
+function applyDirection(lang) {
+  document.documentElement.setAttribute('data-target-dir', lang.dir);
+}
+
 async function boot() {
   const root = document.getElementById('app');
+
+  // `?lang=hoi` picks a language straight from the link and remembers it, so one
+  // language can be handed to someone as a URL rather than as an instruction to
+  // tap the right card. It also means each language has an address of its own.
+  const fromUrl = new URLSearchParams(location.search).get('lang');
+  if (isChannel(fromUrl)) {
+    writeChannel(fromUrl);
+    // Drop the parameter so a refresh or a bookmark doesn't keep overriding a
+    // later change of language from Settings.
+    history.replaceState(null, '', location.pathname);
+  }
+
+  const stored = readChannel();
+  if (!isChannel(stored)) {
+    renderPicker(root);
+    root.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-action="pick-language"]');
+      if (!el) return;
+      writeChannel(el.dataset.arg);
+      // A reload rather than an in-place swap: every store reads its file on
+      // construction, so starting clean is both simpler and less to get wrong.
+      location.reload();
+    });
+    return;
+  }
+
+  const channel = stored;
+  const lang = langFor(channel);
+  // Before any store is constructed — they all read on construction.
+  useChannel(channel);
+  applyDirection(lang);
+  document.title = `${lang.appName} — ${lang.pickerName}`;
+
   const userEntries = new UserEntries();
 
   let repo;
   try {
-    repo = await Repo.load(userEntries);
+    repo = await Repo.load(userEntries, channel);
   } catch (err) {
     root.innerHTML = `<div class="empty" style="margin:auto">
       ${bubbleIcon('close', { color: 'var(--coral)', size: 72 })}
@@ -415,8 +606,8 @@ async function boot() {
     return;
   }
 
-  root.innerHTML = shell();
-  const app = new App(repo);
+  root.innerHTML = shell(lang);
+  const app = new App(repo, lang);
   app.render();
 
   // One delegated handler for the whole app.

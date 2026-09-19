@@ -422,12 +422,13 @@ button.pill { cursor: pointer; }
 }
 
 .gradekey:active .face { inset: var(--depth) 0 0 0; }
-.gradekey .label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
-.gradekey .interval { font-size: 0.68rem; opacity: 0.82; }
+/* No interval line under the label any more, so the word can breathe. */
+.gradekey .label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
 
-.gradekey[data-grade='AGAIN'] { --c: var(--g-again); }
+/* Hard carries the lapse now, so it takes the warning colour; the old Again
+   swatch is unused. */
 .gradekey[data-grade='HARD'] { --c: var(--g-hard); }
-.gradekey[data-grade='GOOD'] { --c: var(--g-good); }
+.gradekey[data-grade='MEDIUM'] { --c: var(--g-good); }
 .gradekey[data-grade='EASY'] { --c: var(--g-easy); }
 
 /* --- the practice card ------------------------------------------------ */
@@ -707,4 +708,68 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 /* Honour a reduced-motion preference — the press animations are decorative. */
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* --- the language picker ------------------------------------------------- */
+/* The first screen, before any language is chosen. There is nothing to render
+   behind it, so it replaces the app rather than sitting over it. */
+
+.picker {
+  margin: auto;
+  padding: 32px 18px calc(32px + env(safe-area-inset-bottom));
+  max-width: 34rem;
+  width: 100%;
+}
+
+.picker h1 {
+  font-size: 1.5rem;
+  margin: 0 0 6px;
+}
+
+.picker > .muted { margin: 0 0 22px; }
+
+.langlist {
+  display: grid;
+  gap: 10px;
+}
+
+.langcard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--outline);
+  border-radius: 20px;
+  background: var(--card);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.langcard:hover { border-color: var(--primary); }
+.langcard:active { transform: translateY(1px); }
+
+.langflag {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.langtext {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* --- right-to-left target text ------------------------------------------- */
+/* Only Hebrew, and only the sentence itself: the chrome stays English, because
+   the whole point is that the target language is the one thing being decoded. */
+
+:root[data-target-dir='rtl'] .sentence-card .dialect,
+:root[data-target-dir='rtl'] .bridge-answer,
+:root[data-target-dir='rtl'] .build-answer {
+  direction: rtl;
+  text-align: right;
+  unicode-bidi: isolate;
 }

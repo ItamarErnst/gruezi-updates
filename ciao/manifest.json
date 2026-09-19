@@ -1,6 +1,6 @@
 {
   "channel": "ciao",
-  "generated": "2026-09-18T16:27:05+00:00",
+  "generated": "2026-09-19T10:34:02+00:00",
   "content": {
     "version": 1,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 2,
-    "versionName": "0.2",
-    "notes": "The redesign, a real practice loop, and updates that arrive on their own from now on.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/ciao-v0.2/ciao-2.apk",
-    "sha256": "047971681191174c8b549371c0adf5ee6452e0815447ade92107b4b86acca8f9",
-    "bytes": 30991277
+    "versionCode": 3,
+    "versionName": "0.3",
+    "notes": "Your old Got it / Tricky sentences are recovered, three grade buttons instead of four, and a fresh deck stops repeating itself.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/ciao-v0.3/ciao-3.apk",
+    "sha256": "730885fdbbfed97208d08543d7fb5382093637f64701b2d30947785172c06e6b",
+    "bytes": 31056813
   }
 }

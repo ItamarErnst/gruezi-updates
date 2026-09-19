@@ -1,7 +1,7 @@
 {
-  "name": "Grüezi — Swiss German",
+  "name": "Grüezi — Swiss German, Dutch, Italian, Hebrew",
   "short_name": "Grüezi",
-  "description": "Learn everyday Zürich Swiss German the Language Transfer way: work it out yourself, then check.",
+  "description": "Work out the sentence yourself, then check. Pick a language and it keeps its own deck.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
@@ -14,5 +14,11 @@
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Swiss German", "url": "./?lang=gruezi" },
+    { "name": "Dutch", "url": "./?lang=hoi" },
+    { "name": "Italian", "url": "./?lang=ciao" },
+    { "name": "Hebrew", "url": "./?lang=shalom" }
   ]
 }

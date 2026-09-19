@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Grüezi web self-test</title>
+</head>
+<body>
+<pre id="out">running…</pre>
+<script type="module">
+/*
+ * The web app's scheduler is a port of Srs.kt, and a port can drift silently —
+ * the Kotlin side has SrsTest on the JVM, and this is the browser's half of that
+ * bargain. Open it in a browser, or run it headless:
+ *
+ *   python3 -m http.server 8000 --directory web
+ *   google-chrome --headless --dump-dom http://localhost:8000/selftest.html
+ *
+ * It prints PASS/FAIL lines and a final tally into the page, so a headless DOM
+ * dump is enough to see the result. No test framework, because pulling one in
+ * would mean a build step for an app that deliberately has none.
+ */
+import * as srs from './js/srs.js';
+import { LANGUAGES, CHANNELS, langFor, isChannel, DEFAULT_CHANNEL } from './js/lang.js';
+import * as pace from './js/pace.js';
+
+const lines = [];
+let pass = 0, fail = 0;
+
+function ok(name, cond, detail = '') {
+  if (cond) { pass++; lines.push('PASS  ' + name); }
+  else { fail++; lines.push('FAIL  ' + name + (detail ? '  — ' + detail : '')); }
+}
+function eq(name, actual, expected) {
+  ok(name, Object.is(actual, expected) || JSON.stringify(actual) === JSON.stringify(expected),
+     `expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+}
+
+// --- srs.js: three grades, matching SrsTest.kt -----------------------------
+const dayStart = 28000 * 1440;
+const now = dayStart + 600;
+const fixed = () => 0.5;                       // pin the fuzz
+const g = (card, grade, at = now) => srs.grade(card, grade, at, dayStart, fixed);
+const graduated = (interval, ease = srs.STARTING_EASE) =>
+  ({ ...srs.newCard(), phase: srs.Phase.REVIEW, intervalDays: interval, ease, reps: 3 });
+
+eq('grades are exactly Hard/Medium/Easy', Object.keys(srs.Grade), ['HARD', 'MEDIUM', 'EASY']);
+
+let c = srs.newCard();
+eq('a new card starts in learning', c.phase, srs.Phase.LEARNING);
+
+c = g(srs.newCard(), srs.Grade.MEDIUM);
+eq('medium advances one learning step', c.step, 1);
+eq('and comes back in 10 minutes', c.due, now + 10);
+
+c = g(c, srs.Grade.MEDIUM, now + 10);
+eq('a second medium graduates it', c.phase, srs.Phase.REVIEW);
+eq('onto the graduating interval', c.intervalDays, srs.GRADUATING_INTERVAL);
+
+c = g(g(srs.newCard(), srs.Grade.MEDIUM), srs.Grade.HARD, now + 10);
+eq('hard sends a learning card back to step 0', c.step, 0);
+eq('due on the 1-minute step', c.due, now + 10 + 1);
+
+c = g(srs.newCard(), srs.Grade.EASY);
+eq('easy graduates straight out', c.phase, srs.Phase.REVIEW);
+eq('onto the easy interval', c.intervalDays, srs.EASY_INTERVAL);
+
+c = g(graduated(10), srs.Grade.MEDIUM);
+eq('medium multiplies by ease', c.intervalDays, 25);
+eq('medium leaves ease alone', c.ease, 2500);
+
+c = g(graduated(10), srs.Grade.EASY);
+eq('easy raises ease', c.ease, 2650);
+eq('easy adds the bonus', c.intervalDays, 34);
+
+// The soft lapse — the whole point of the three-button design.
+c = g(graduated(30), srs.Grade.HARD);
+eq('hard lapses into relearning', c.phase, srs.Phase.RELEARNING);
+eq('hard costs 0.20 ease', c.ease, 2300);
+eq('hard HALVES rather than collapsing', c.intervalDays, 15);
+eq('and returns inside the session', c.due, now + 10);
+eq('a lapse is recorded', c.lapses, 1);
+
+const back = g(c, srs.Grade.MEDIUM, now + 10);
+eq('medium returns it to review', back.phase, srs.Phase.REVIEW);
+eq('rebuilding from the halved interval', back.intervalDays, 15);
+eq('the ease penalty sticks', back.ease, 2300);
+
+c = g(graduated(1, srs.MIN_EASE), srs.Grade.MEDIUM);
+ok('a pass always moves a card forward', c.intervalDays > 1, `got ${c.intervalDays}`);
+
+let floor = graduated(10, 1400);
+for (let i = 0; i < 5; i++) {
+  floor = g(floor, srs.Grade.HARD);
+  floor = g(floor, srs.Grade.MEDIUM, now + 10);
+}
+eq('ease never falls below the floor', floor.ease, srs.MIN_EASE);
+
+eq('the lapse multiplier halves', srs.LAPSE_MULTIPLIER, 0.5);
+ok('the old HARD_MULTIPLIER is gone', srs.HARD_MULTIPLIER === undefined);
+
+// --- pace.js: the taper ----------------------------------------------------
+eq('a fresh deck opens at the seed rate', pace.perDay(0), pace.SEED_RATE);
+eq('an established deck settles', pace.perDay(pace.ESTABLISHED_DECK), pace.SETTLED_RATE);
+eq('the taper crosses at the threshold', pace.perDay(pace.ESTABLISHED_DECK - 1), pace.SEED_RATE);
+eq('an explicit rate is literal', pace.perDay(0, 10), 10);
+ok('settled is slower than seed', pace.SETTLED_RATE < pace.SEED_RATE);
+ok('a tiny deck keeps introducing', pace.shouldForceNew(1, true));
+ok('an established deck does not', !pace.shouldForceNew(pace.MIN_ROTATION, true));
+ok('nothing forced while reviews are owed', !pace.shouldForceNew(1, false));
+
+// --- lang.js ---------------------------------------------------------------
+eq('four channels', CHANNELS.length, 4);
+ok('every channel has strings', CHANNELS.every((ch) => isChannel(ch) && langFor(ch)));
+eq('Hebrew renames Bridges', LANGUAGES.shalom.bridgesTitle, 'Basics');
+eq('Hebrew is right-to-left', LANGUAGES.shalom.dir, 'rtl');
+ok('the others are left-to-right',
+   ['gruezi', 'hoi', 'ciao'].every((ch) => LANGUAGES[ch].dir === 'ltr'));
+eq('an unknown channel falls back', langFor('nope').channel, DEFAULT_CHANNEL);
+ok('every channel carries the method text',
+   CHANNELS.every((ch) => langFor(ch).methodParagraphs.length === 5));
+ok('every channel names its three buttons',
+   CHANNELS.every((ch) => {
+     const l = langFor(ch);
+     return l.gradeHard && l.gradeMedium && l.gradeEasy;
+   }));
+
+// --- backup.js -------------------------------------------------------------
+// The only durable copy of a browser deck, so the property that matters is that
+// a bad file changes nothing.
+const store = await import('./js/store.js');
+const backup = await import('./js/backup.js');
+
+localStorage.clear();
+store.useChannel('gruezi');
+localStorage.setItem('gruezi.gruezi.review', JSON.stringify({ v: 2, cards: { 'a1-001|READ': srs.newCard() } }));
+localStorage.setItem('gruezi.gruezi.prefs', JSON.stringify({ level: 'B1' }));
+
+const dump = backup.exportJson('gruezi');
+const parsed = JSON.parse(dump);
+eq('a backup names its channel', parsed.channel, 'gruezi');
+eq('and its platform', parsed.platform, 'web');
+ok('it carries the review state', !!parsed.state.review);
+ok('and the prefs', parsed.state.prefs.level === 'B1');
+ok('the file name is dated and named', /^gruezi-web-backup-\d{4}-\d{2}-\d{2}\.json$/.test(backup.fileName('gruezi')));
+
+const before = JSON.stringify(localStorage);
+ok('junk is refused', !backup.importJson('gruezi', 'not json').ok);
+ok('an empty object is refused', !backup.importJson('gruezi', '{}').ok);
+ok('a bundle with no state is refused', !backup.importJson('gruezi', '{"format":1,"state":{}}').ok);
+const wrongLang = backup.importJson('gruezi', JSON.stringify({ ...parsed, channel: 'shalom' }));
+ok('another language is refused', !wrongLang.ok);
+ok('and says why', /shalom/.test(wrongLang.reason));
+ok('a phone backup is refused', !backup.importJson('gruezi', JSON.stringify({ ...parsed, platform: 'android' })).ok);
+ok('a newer format is refused', !backup.importJson('gruezi', JSON.stringify({ ...parsed, format: 99 })).ok);
+eq('and none of that touched storage', JSON.stringify(localStorage), before);
+
+localStorage.clear();
+ok('a good backup restores', backup.importJson('gruezi', dump).ok);
+eq('the prefs came back', JSON.parse(localStorage.getItem('gruezi.gruezi.prefs')).level, 'B1');
+
+// --- storage namespacing ---------------------------------------------------
+// Every language shares the sentence-id scheme, so a flat key set would have one
+// language claiming another's progress.
+localStorage.clear();
+store.useChannel('hoi');
+const hoiProgress = new store.ProgressStore();
+hoiProgress.markNewSentence(5);
+ok('Dutch writes under its own namespace', localStorage.getItem('gruezi.hoi.progress') !== null);
+ok('and leaves Swiss alone', localStorage.getItem('gruezi.gruezi.progress') === null);
+
+// The pre-multilingual keys were flat and always Swiss; they get adopted, once.
+localStorage.clear();
+localStorage.setItem('gruezi.review', JSON.stringify({ v: 2, cards: { 'legacy|READ': srs.newCard() } }));
+store.useChannel('gruezi');
+ok('the old flat Swiss keys are adopted', localStorage.getItem('gruezi.gruezi.review') !== null);
+ok('and the original is left as a fallback', localStorage.getItem('gruezi.review') !== null);
+localStorage.clear();
+
+lines.push('');
+lines.push(`TOTAL ${pass + fail} checks, ${pass} passed, ${fail} failed`);
+lines.push(fail === 0 ? 'RESULT: OK' : 'RESULT: FAILURES');
+document.getElementById('out').textContent = lines.join('\n');
+</script>
+</body>
+</html>

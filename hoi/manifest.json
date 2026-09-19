@@ -1,6 +1,6 @@
 {
   "channel": "hoi",
-  "generated": "2026-09-18T16:27:16+00:00",
+  "generated": "2026-09-19T10:34:02+00:00",
   "content": {
     "version": 1,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 1,
-    "versionName": "0.1",
-    "notes": "First release: 21 bridges, 7 lessons and 81 sentences of everyday Dutch.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.1/hoi-1.apk",
-    "sha256": "48d731df29afb8793ca01808e16d19411ab3ea080e4af44d9ef778fbbdcea820",
-    "bytes": 30985461
+    "versionCode": 2,
+    "versionName": "0.2",
+    "notes": "Your old Got it / Tricky sentences are recovered, three grade buttons instead of four, and a fresh deck stops repeating itself.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.2/hoi-2.apk",
+    "sha256": "260fd380dcfeafc285146292ef630686d1c498fc1a01f7b4ffcaf93a82711b9c",
+    "bytes": 31050997
   }
 }

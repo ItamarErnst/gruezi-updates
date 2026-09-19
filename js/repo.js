@@ -2,9 +2,10 @@
  * The content layer: loads the three JSON files and answers the questions the
  * screens ask of them. Ported from `SentenceRepository.kt`.
  *
- * The JSON under `web/data/` is copied verbatim from `app/src/main/assets/` by
- * `tools/build_web.py` — the Android assets stay the single source of truth, so
- * a content edit only ever happens in one place.
+ * The JSON under `web/data/<channel>/` is copied verbatim from each language
+ * branch's `app/src/main/assets/` — the Android assets stay the single source of
+ * truth, so a content edit only ever happens in one place. One folder per
+ * channel, because unlike the phone the web app ships every language at once.
  */
 
 export const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -17,11 +18,11 @@ export class Repo {
     this.userEntries = userEntries;
   }
 
-  static async load(userEntries) {
+  static async load(userEntries, channel) {
     const [sentences, bridges, lessons] = await Promise.all(
       ['sentences', 'bridges', 'lessons'].map((n) =>
-        fetch(`data/${n}.json`).then((r) => {
-          if (!r.ok) throw new Error(`could not load ${n}.json (${r.status})`);
+        fetch(`data/${channel}/${n}.json`).then((r) => {
+          if (!r.ok) throw new Error(`could not load ${channel}/${n}.json (${r.status})`);
           return r.json();
         }),
       ),

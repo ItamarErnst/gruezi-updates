@@ -70,8 +70,15 @@ export class DailyView {
     this.revealed = false;
   }
 
+  /** Today's new-sentence quota, from the deck's size and the user's setting. */
+  newGoal() {
+    const { reviews, repo, prefs, pace } = this.ctx;
+    const seen = repo.all().filter((s) => reviews.isSeen(s.id)).length;
+    return pace.perDay(seen, prefs.get('newPerDay') ?? pace.AUTO);
+  }
+
   nextCard() {
-    const { reviews, cycle, progress } = this.ctx;
+    const { reviews, cycle, progress, repo, pace } = this.ctx;
     const candidates = this.reviewCandidates();
     const byId = new Map(candidates.map((s) => [s.id, s]));
     const ids = candidates.map((s) => s.id);
@@ -82,8 +89,9 @@ export class DailyView {
     const step = queue.find((q) => q.card.phase !== Phase.REVIEW);
     if (step) return this.show(byId.get(step.id), Source.STEP, step.mode);
 
-    // 2. Today's new sentence.
-    if (!progress.newSentenceDone()) {
+    // 2. Today's new sentences, up to the quota.
+    const seen = repo.all().filter((x) => reviews.isSeen(x.id)).length;
+    if (progress.newCountToday() < this.newGoal()) {
       const fresh = this.todays();
       if (fresh) return this.show(fresh, Source.NEW);
     }
@@ -92,7 +100,15 @@ export class DailyView {
     const due = queue[0];
     if (due) return this.show(byId.get(due.id), Source.DUE, due.mode);
 
-    // 4. Nothing owed — the rotation deals free practice.
+    // 4. Nothing owed. On a deck too small to rotate, keep introducing rather
+    //    than dealing the same couple of cards round and round — that loop is
+    //    what made day one feel broken.
+    if (pace.shouldForceNew(seen, true)) {
+      const fresh = this.todays();
+      if (fresh) return this.show(fresh, Source.NEW);
+    }
+
+    // 5. Otherwise the rotation deals free practice.
     const slot = cycle.next(ids, (id) => this.weightOf(id));
     if (!slot) return this.show(this.todays(), Source.NEW);
     return this.show(byId.get(slot.id), Source.EXTRA, slot.mode);
@@ -108,9 +124,10 @@ export class DailyView {
     reviews.grade(card.id, this.mode, g);
     progress.markGraded(card.id);
     // Only the day's new sentence satisfies the "new" goal.
+    const goal = this.newGoal();
     const completed = this.source === Source.NEW
-      ? progress.markNewSentence()
-      : progress.addReview();
+      ? progress.markNewSentence(goal)
+      : progress.addReview(goal);
 
     this.nextCard();
     this.maybeLevelUp();
@@ -157,9 +174,10 @@ export class DailyView {
 
   renderHeader() {
     const { progress, reviews } = this.ctx;
-    const newDone = progress.newSentenceDone();
+    const newDone = progress.newCountToday();
+    const newGoal = this.newGoal();
     const done = progress.reviewsDone();
-    const complete = newDone && done >= REVIEW_GOAL;
+    const complete = newDone >= newGoal && done >= REVIEW_GOAL;
     const dueNow = reviews.dueCount(this.reviewCandidates().map((s) => s.id));
     const canTestOut = LEVELS.indexOf(this.level) < LEVELS.length - 1;
 
@@ -170,7 +188,7 @@ export class DailyView {
     });
     const duePill = dueNow > 0 ? pill(`${dueNow} due`, { variant: 'sky' }) : '';
 
-    const progressValue = ((newDone ? 1 : 0) + done) / (1 + REVIEW_GOAL);
+    const progressValue = (newDone + done) / (newGoal + REVIEW_GOAL);
     const dots = Array.from({ length: REVIEW_GOAL }, (_, i) =>
       `<span class="dot" style="width:12px;height:12px;border-radius:999px;background:${
         i < done ? 'var(--primary)' : 'var(--card-alt)'
@@ -181,9 +199,10 @@ export class DailyView {
            <div><strong>Today's goal is done</strong>
            <p class="small muted">Anything more is free practice.</p></div></div>`
       : `<div class="row">${track(progressValue)}
-           <span class="small muted">${(newDone ? 1 : 0) + done}/${REVIEW_GOAL + 1}</span></div>
+           <span class="small muted">${newDone + done}/${newGoal + REVIEW_GOAL}</span></div>
          <div class="row" style="margin-top:10px;gap:6px">
-           ${pill('New', { variant: newDone ? 'filled' : '' })}${dots}</div>`;
+           ${pill(newGoal > 1 ? `New ${newDone}/${newGoal}` : 'New',
+             { variant: newDone >= newGoal ? 'filled' : '' })}${dots}</div>`;
 
     return `<section class="card" style="margin-top:4px">
       <div class="row between">
@@ -223,10 +242,10 @@ export class DailyView {
     let back = '';
     if (!this.revealed) {
       back = `<p class="reveal-hint">${icon('eye')}
-        ${recall ? 'Say it in Züritüütsch, then tap' : 'Tap to reveal'}</p>`;
+        ${recall ? `Say it in ${esc(this.ctx.lang.target)}, then tap` : 'Tap to reveal'}</p>`;
     } else if (recall) {
       back = `<div class="answer-block">
-        ${sectionLabel('Züritüütsch')}
+        ${sectionLabel(this.ctx.lang.target)}
         <p class="dialect answer">${esc(s.dialect)}</p>${phon}
         ${sectionLabel('Word-for-word')}
         <p class="literal">${esc(s.literal)}</p></div>`;
@@ -252,19 +271,29 @@ export class DailyView {
       : '';
 
     return `<section class="card sentence-card tappable" data-action="toggle-reveal">
-      ${pill(s.level, { variant: 'accent' })}
+      ${pill(s.level, { variant: 'accent' })}${s.unverified
+        // Drafted, not yet read by a native speaker. Badged rather than hidden:
+        // still worth practising, but you should know the spelling is a
+        // considered guess and not an authority.
+        ? ` ${pill(this.ctx.lang.unverifiedBadge)}` : ''}
       ${front}${back}${note}${bridgeChips}
     </section>`;
   }
 
   renderGrades(s) {
-    const previews = this.ctx.reviews.previewLabels(s.id, this.mode);
+    // Three plain words, and no interval under them: what the buttons do to the
+    // schedule is explained once in Settings rather than restated on every card.
+    const lang = this.ctx.lang;
+    const labels = {
+      HARD: lang.gradeHard,
+      MEDIUM: lang.gradeMedium,
+      EASY: lang.gradeEasy,
+    };
     const keys = Object.values(Grade).map((g) => `
       <button type="button" class="gradekey" data-grade="${g}" data-action="grade" data-arg="${g}">
         <span class="slab"></span>
         <span class="face">
-          <span class="label">${esc(g === 'GOOD' ? 'Good' : g[0] + g.slice(1).toLowerCase())}</span>
-          <span class="interval">${esc(previews[g])}</span>
+          <span class="label">${esc(labels[g])}</span>
         </span>
       </button>`).join('');
 
@@ -278,7 +307,7 @@ export class DailyView {
 
     return `<div style="margin-top:18px">
       ${audioButton ? `<div class="row" style="justify-content:center;margin-bottom:16px">${audioButton}</div>` : ''}
-      ${sectionLabel('How well did you know it?')}
+      ${sectionLabel(this.ctx.lang.gradeQuestion)}
       <div class="grades" style="margin-top:8px">${keys}</div>
       <div class="row between" style="margin-top:12px">
         ${forget}

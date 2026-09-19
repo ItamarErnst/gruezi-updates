@@ -10,16 +10,80 @@
 
 import {
   Grade, Mode, Phase, newCard, grade as gradeCard, isDue,
-  nowMinute, dayStartMinute, epochDay, previewLabels,
+  nowMinute, dayStartMinute, epochDay,
 } from './srs.js';
 
-const KEYS = {
+/**
+ * Storage is namespaced per language: `gruezi.<channel>.<what>`.
+ *
+ * The app serves all four languages from one origin now, and they share a
+ * sentence-id scheme — `a1-001` exists in every one of them — so a single flat
+ * set of keys would have Dutch progress claiming credit for Swiss sentences. The
+ * namespace also means two languages can be learned side by side, each with its
+ * own deck, which is free once the keys are separated and impossible afterwards.
+ */
+const NAMES = ['review', 'cycle', 'progress', 'prefs', 'user'];
+
+/**
+ * What the keys were before the app went multilingual — flat, and always Swiss.
+ * Anyone who used the web app before this is holding these, so they are adopted
+ * into the Swiss namespace on first run rather than left to rot.
+ */
+const LEGACY_KEYS = {
   review: 'gruezi.review',
   cycle: 'gruezi.cycle',
   progress: 'gruezi.progress',
   prefs: 'gruezi.prefs',
   user: 'gruezi.user',
 };
+
+/** Which language the keys below belong to. Set by `useChannel` before any store. */
+let activeChannel = 'gruezi';
+
+const KEYS = new Proxy({}, {
+  get: (_, name) => `gruezi.${activeChannel}.${String(name)}`,
+});
+
+/** Which language the learner picked. Global, not namespaced — it selects the namespace. */
+const CHANNEL_KEY = 'gruezi.channel';
+
+export function readChannel() {
+  try {
+    return localStorage.getItem(CHANNEL_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function writeChannel(channel) {
+  try {
+    localStorage.setItem(CHANNEL_KEY, channel);
+  } catch {
+    // Storage denied. The choice won't stick, so the picker returns next visit —
+    // annoying, but better than refusing to run.
+  }
+}
+
+/**
+ * Point the stores at one language, and rescue the pre-multilingual keys.
+ *
+ * Must be called before any store is constructed — they read on construction.
+ */
+export function useChannel(channel) {
+  activeChannel = channel;
+  if (channel !== 'gruezi') return;   // the flat keys were only ever Swiss
+  for (const name of NAMES) {
+    try {
+      const target = `gruezi.gruezi.${name}`;
+      if (localStorage.getItem(target) !== null) continue;
+      const legacy = localStorage.getItem(LEGACY_KEYS[name]);
+      if (legacy !== null) localStorage.setItem(target, legacy);
+    } catch {
+      // Storage refused entirely (private window, blocked site data). Nothing to
+      // migrate and nothing to do — the session still works, it just won't persist.
+    }
+  }
+}
 
 function read(key, fallback) {
   try {
@@ -102,10 +166,6 @@ export class ReviewStore {
 
   dueCount(ids, now = nowMinute()) {
     return this.dueQueue(ids, now).length;
-  }
-
-  previewLabels(id, mode, now = nowMinute()) {
-    return previewLabels(this.card(id, mode), now, dayStartMinute());
   }
 
   grade(id, mode, g, now = nowMinute()) {
@@ -237,7 +297,9 @@ export class ProgressStore {
     const s = read(KEYS.progress, null) || {};
     this.days = new Set(s.days || []);
     this.day = s.day || 0;
-    this.newDone = !!s.newDone;
+    // "newDone" was the old one-a-day flag, which meant exactly one; the quota
+    // can be more than that now, so it counts. Read the old shape if it's there.
+    this.newCount = typeof s.newCount === 'number' ? s.newCount : (s.newDone ? 1 : 0);
     this.reviews = s.reviews || 0;
     this.graded = new Set(s.graded || []);
     this.completedLessons = new Set(s.completedLessons || []);
@@ -247,7 +309,7 @@ export class ProgressStore {
     write(KEYS.progress, {
       days: [...this.days],
       day: this.day,
-      newDone: this.newDone,
+      newCount: this.newCount,
       reviews: this.reviews,
       graded: [...this.graded],
       completedLessons: [...this.completedLessons],
@@ -258,15 +320,16 @@ export class ProgressStore {
   roll(today = epochDay()) {
     if (this.day !== today) {
       this.day = today;
-      this.newDone = false;
+      this.newCount = 0;
       this.reviews = 0;
       this.graded.clear();
     }
   }
 
-  newSentenceDone(today = epochDay()) {
+  /** How many new sentences have been graded today. */
+  newCountToday(today = epochDay()) {
     this.roll(today);
-    return this.newDone;
+    return this.newCount;
   }
 
   reviewsDone(today = epochDay()) {
@@ -284,22 +347,24 @@ export class ProgressStore {
     this.save();
   }
 
-  /** Mark today's new sentence done. True if this completed the day. */
-  markNewSentence(today = epochDay()) {
+  /** Record one new sentence. True if this completed the day's goal. */
+  markNewSentence(newGoal, today = epochDay()) {
     this.roll(today);
-    this.newDone = true;
-    return this.finish(today);
+    this.newCount++;
+    return this.finish(today, newGoal);
   }
 
-  /** Record one review. True if this completed the day. */
-  addReview(today = epochDay()) {
+  /** Record one review. True if this completed the day's goal. */
+  addReview(newGoal, today = epochDay()) {
     this.roll(today);
     if (this.reviews < REVIEW_GOAL) this.reviews++;
-    return this.finish(today);
+    return this.finish(today, newGoal);
   }
 
-  finish(today) {
-    const complete = this.newDone && this.reviews >= REVIEW_GOAL;
+  finish(today, newGoal) {
+    const complete = this.newCount >= newGoal && this.reviews >= REVIEW_GOAL;
+    // Once banked, a day stays complete — lowering the rate tomorrow must not
+    // reach back and un-complete a day finished under the old one.
     const justNow = complete && !this.days.has(today);
     if (complete) this.days.add(today);
     this.save();
@@ -330,6 +395,9 @@ const PREF_DEFAULTS = {
   phonetics: true,
   audio: false,
   theme: 'system',   // system | light | dark
+  // 0 is pace.AUTO — the taper. Spelled as a literal so store.js doesn't have to
+  // depend on pace.js just for a default.
+  newPerDay: 0,
 };
 
 export class Prefs {
