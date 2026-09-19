@@ -1,14 +1,14 @@
 {
   "channel": "ciao",
-  "generated": "2026-09-19T12:03:19+00:00",
+  "generated": "2026-09-19T12:23:25+00:00",
   "content": {
-    "version": 1,
+    "version": 2,
     "files": {
       "sentences.json": {
         "path": "content/sentences.json",
-        "sha256": "34c48636063579b6776474de087d7947b5a1f3dcfb5eba8ef85aa14b7c957e14",
-        "bytes": 22646,
-        "entries": 97
+        "sha256": "119379d4667ff2daba75ea4a4e66da20e7db6ce1db90d92ce91d3bd73c641175",
+        "bytes": 42258,
+        "entries": 179
       },
       "bridges.json": {
         "path": "content/bridges.json",
@@ -18,18 +18,18 @@
       },
       "lessons.json": {
         "path": "content/lessons.json",
-        "sha256": "241b93489cbf9a13a44e82046f6193a521340d70c10d35fe10afedb549bf1854",
-        "bytes": 10578,
-        "entries": 8
+        "sha256": "20ccc8e38daec54b93ec3d75622ce6840627e77eef4bb09898ecf1d9c299900d",
+        "bytes": 16448,
+        "entries": 13
       }
     }
   },
   "app": {
-    "versionCode": 4,
-    "versionName": "0.4",
-    "notes": "Repeats in one session no longer stretch a card's schedule; adding an entry asks for less.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/ciao-v0.4/ciao-4.apk",
-    "sha256": "57305bca9b83a43582ec6f0a9ddc1b577a0c37d9e62e77d29dc66b47efc7476a",
-    "bytes": 31056813
+    "versionCode": 5,
+    "versionName": "0.5",
+    "notes": "More sentences and lessons, and both genders taught rather than one.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/ciao-v0.5/ciao-5.apk",
+    "sha256": "f9a8aef40f47155736d339b49be9290a3afb3244b1bdcb9f0c3a5d3c30cb977b",
+    "bytes": 31065933
   }
 }

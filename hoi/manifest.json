@@ -1,14 +1,14 @@
 {
   "channel": "hoi",
-  "generated": "2026-09-19T12:03:19+00:00",
+  "generated": "2026-09-19T12:23:25+00:00",
   "content": {
-    "version": 1,
+    "version": 2,
     "files": {
       "sentences.json": {
         "path": "content/sentences.json",
-        "sha256": "e53e43d90484f0d22070108b7039f21638d77bfda439391e86d24c55c58ed09c",
-        "bytes": 17447,
-        "entries": 81
+        "sha256": "96a8e2375a0879ad18db5fa01097b5dcccb7ef26a4aed92d7c354b4284eaf410",
+        "bytes": 38953,
+        "entries": 169
       },
       "bridges.json": {
         "path": "content/bridges.json",
@@ -18,18 +18,18 @@
       },
       "lessons.json": {
         "path": "content/lessons.json",
-        "sha256": "9754720e301decebb708174fb0d41c9bbf828e2a5d4db9ea0dd3f830f11ebc9e",
-        "bytes": 8373,
-        "entries": 7
+        "sha256": "b8277190513e66ca9c4c6decc7e62647f01d2d36623f6594195722b402c4ee6a",
+        "bytes": 15279,
+        "entries": 13
       }
     }
   },
   "app": {
-    "versionCode": 3,
-    "versionName": "0.3",
-    "notes": "Repeats in one session no longer stretch a card's schedule; adding an entry asks for less.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.3/hoi-3.apk",
-    "sha256": "5c6ec268aa754454eaf5c4c072020d539a277ab062fa34e8152000de38038939",
-    "bytes": 31050997
+    "versionCode": 4,
+    "versionName": "0.4",
+    "notes": "More sentences and lessons, and both genders taught rather than one.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.4/hoi-4.apk",
+    "sha256": "13efcf2935d4a1d714bb5c684f2aac2fb45443ea60547069f5606b0f81a29543",
+    "bytes": 31060769
   }
 }

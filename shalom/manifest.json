@@ -1,14 +1,14 @@
 {
   "channel": "shalom",
-  "generated": "2026-09-19T12:03:19+00:00",
+  "generated": "2026-09-19T12:23:25+00:00",
   "content": {
-    "version": 2,
+    "version": 3,
     "files": {
       "sentences.json": {
         "path": "content/sentences.json",
-        "sha256": "47935939021cca9cfa9afd806ea0449b75721384981a8e8512c8b6303c2989fe",
-        "bytes": 8573,
-        "entries": 45
+        "sha256": "5f376c2d1a1e6f1b2192fb7e5f3ea1fecf08967f7e9d6aae7e6fd74dadee36f6",
+        "bytes": 36089,
+        "entries": 171
       },
       "bridges.json": {
         "path": "content/bridges.json",
@@ -18,18 +18,18 @@
       },
       "lessons.json": {
         "path": "content/lessons.json",
-        "sha256": "3375436fa89233af9195a8179d0568668a1eec07de75f797d1cfc6163f2658dd",
-        "bytes": 2693,
-        "entries": 3
+        "sha256": "da15f17a7bdc3ffafdc41850c360a4c2439dc864839d33140f7afd66dad68a1f",
+        "bytes": 13508,
+        "entries": 13
       }
     }
   },
   "app": {
-    "versionCode": 4,
-    "versionName": "0.4",
-    "notes": "Repeats in one session no longer stretch a card's schedule; adding an entry asks for less.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.4/shalom-4.apk",
-    "sha256": "150d3067e3323854e66faa0e8190cd15d760bfd0951837a781bd3efc0cfd4830",
-    "bytes": 31042753
+    "versionCode": 5,
+    "versionName": "0.5",
+    "notes": "More sentences and lessons, and both genders taught rather than one.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.5/shalom-5.apk",
+    "sha256": "ce08a46ea59fbdcfb1e60f51919a80e7c0cac25a6df7367c6dc95cee98eed61a",
+    "bytes": 31056237
   }
 }
