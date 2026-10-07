@@ -1,6 +1,6 @@
 {
   "channel": "shalom",
-  "generated": "2026-09-19T12:23:25+00:00",
+  "generated": "2026-10-07T07:08:30+00:00",
   "content": {
     "version": 3,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 5,
-    "versionName": "0.5",
-    "notes": "More sentences and lessons, and both genders taught rather than one.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.5/shalom-5.apk",
-    "sha256": "ce08a46ea59fbdcfb1e60f51919a80e7c0cac25a6df7367c6dc95cee98eed61a",
-    "bytes": 31056237
+    "versionCode": 6,
+    "versionName": "0.6",
+    "notes": "Each sentence is rated once a day. When everything due is rated you'll see 'All done for today', with Learn one more and Practice anyway (no rating).",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.6/shalom-6.apk",
+    "sha256": "09fd9036680cde07b10c8a9cb94e530cf4f5ab382727c1db1cf7da832d63c2d8",
+    "bytes": 31072621
   }
 }

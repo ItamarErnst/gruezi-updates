@@ -1,6 +1,6 @@
 {
   "channel": "gruezi",
-  "generated": "2026-09-19T12:23:25+00:00",
+  "generated": "2026-10-07T07:08:26+00:00",
   "content": {
     "version": 3,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 7,
-    "versionName": "0.7",
-    "notes": "More sentences and lessons, and both genders taught rather than one.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.7/gruezi-7.apk",
-    "sha256": "f208213dc9c4cd198aae73664dd4fec79a050e2d9f6ebc1c6b57ea01d09659a9",
-    "bytes": 31883819
+    "versionCode": 8,
+    "versionName": "0.8",
+    "notes": "Each sentence is rated once a day. When everything due is rated you'll see 'All done for today', with Learn one more and Practice anyway (no rating).",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.8/gruezi-8.apk",
+    "sha256": "8a30b21087055195654d5ec04d2209c1a208b547ba8d8da177cfb058c9d07c98",
+    "bytes": 31900203
   }
 }

@@ -1,6 +1,6 @@
 {
   "channel": "hoi",
-  "generated": "2026-09-19T12:23:25+00:00",
+  "generated": "2026-10-07T07:08:35+00:00",
   "content": {
     "version": 2,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 4,
-    "versionName": "0.4",
-    "notes": "More sentences and lessons, and both genders taught rather than one.",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.4/hoi-4.apk",
-    "sha256": "13efcf2935d4a1d714bb5c684f2aac2fb45443ea60547069f5606b0f81a29543",
-    "bytes": 31060769
+    "versionCode": 5,
+    "versionName": "0.5",
+    "notes": "Each sentence is rated once a day. When everything due is rated you'll see 'All done for today', with Learn one more and Practice anyway (no rating).",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/hoi-v0.5/hoi-5.apk",
+    "sha256": "24b77b0d77a0c04bb72e1d5eeeb5a3ee69bab7191168e22b62435123eed55aa0",
+    "bytes": 31077153
   }
 }
