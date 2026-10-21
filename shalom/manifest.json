@@ -1,6 +1,6 @@
 {
   "channel": "shalom",
-  "generated": "2026-10-07T07:08:30+00:00",
+  "generated": "2026-10-21T08:27:42+00:00",
   "content": {
     "version": 3,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 6,
-    "versionName": "0.6",
-    "notes": "Each sentence is rated once a day. When everything due is rated you'll see 'All done for today', with Learn one more and Practice anyway (no rating).",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/shalom-v0.6/shalom-6.apk",
-    "sha256": "09fd9036680cde07b10c8a9cb94e530cf4f5ab382727c1db1cf7da832d63c2d8",
-    "bytes": 31072621
+    "versionCode": 9,
+    "versionName": "0.9",
+    "notes": "Shalom is now Grüezi — one app for every language. Your Hebrew progress comes with you: after updating, download Hebrew from the menu and carry on.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.9/gruezi-9.apk",
+    "sha256": "312291cf24925ab6f8951e83e52a4cb0669e508b7c45e51458207270b289b2a2",
+    "bytes": 31166844
   }
 }
