@@ -1,6 +1,6 @@
 /**
  * Every string that depends on which language is being taught — the web twin of
- * `Lang.kt`, and the reason the web app can hold all four at once.
+ * `Lang.kt`, and the reason the web app can hold every language at once.
  *
  * On Android a fork is a branch and `Lang.kt` is the one code file it owns. The
  * web has no forks: it ships every language from one deploy, so the same strings
@@ -130,10 +130,32 @@ export const LANGUAGES = {
     phoneticsSettingSubtitle: 'The Hebrew spelled out in English letters, so you '
       + 'can say it before you can read it.',
   },
+
+  // Born in the one-app days, so it never had an app name of its own: its
+  // channel is just its language id, as on Android (Languages.channelOf).
+  spanish: {
+    ...COMMON,
+    channel: 'spanish',
+    appName: 'Grüezi',
+    target: 'Español',
+    targetAdjective: 'Spanish',
+    pickerName: 'Spanish',
+    pickerNote: 'Latin American — and a Latin vocabulary English already half knows',
+    flag: '🇲🇽',
+    dir: 'ltr',
+    bridgesTitle: 'Bridges',
+    bridgesBlurb: 'One rule, many words. Read the trick, then build each word '
+      + 'yourself before you reveal it.',
+    bridgesBack: 'All bridges',
+    phoneticsLabel: 'Pronunciation',
+    phoneticsSettingTitle: 'Show pronunciation',
+    phoneticsSettingSubtitle: 'An English-style respelling under the Spanish '
+      + 'sentence — CAPS is the stressed syllable.',
+  },
 };
 
 /** Channels in the order the picker offers them. */
-export const CHANNELS = ['gruezi', 'hoi', 'ciao', 'shalom'];
+export const CHANNELS = ['gruezi', 'hoi', 'ciao', 'shalom', 'spanish'];
 
 /** The default when nothing has been chosen — this started as a Swiss app. */
 export const DEFAULT_CHANNEL = 'gruezi';

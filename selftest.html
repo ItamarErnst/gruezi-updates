@@ -109,7 +109,7 @@ ok('an established deck does not', !pace.shouldForceNew(pace.MIN_ROTATION, true)
 ok('nothing forced while reviews are owed', !pace.shouldForceNew(1, false));
 
 // --- lang.js ---------------------------------------------------------------
-eq('four channels', CHANNELS.length, 4);
+eq('five channels', CHANNELS.length, 5);
 ok('every channel has strings', CHANNELS.every((ch) => isChannel(ch) && langFor(ch)));
 eq('Hebrew renames Bridges', LANGUAGES.shalom.bridgesTitle, 'Basics');
 eq('Hebrew is right-to-left', LANGUAGES.shalom.dir, 'rtl');

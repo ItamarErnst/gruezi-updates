@@ -1,0 +1,155 @@
+{
+  "generated": "2026-10-21T08:17:01+00:00",
+  "languages": [
+    {
+      "id": "dutch",
+      "name": "Dutch",
+      "flag": "🇳🇱",
+      "version": 1,
+      "sentences": 169,
+      "lessons": 13,
+      "files": {
+        "lang.json": {
+          "path": "dutch/lang.json",
+          "sha256": "5b2a4eef0fc983d731b89563543732a9d38cdc05f5fd6d73cb40a75ac14b7e37",
+          "bytes": 1774
+        },
+        "sentences.json": {
+          "path": "dutch/sentences.json",
+          "sha256": "96a8e2375a0879ad18db5fa01097b5dcccb7ef26a4aed92d7c354b4284eaf410",
+          "bytes": 38953
+        },
+        "bridges.json": {
+          "path": "dutch/bridges.json",
+          "sha256": "27cef734a4e221ded957156daf9aaae863aca022edb99184bd3dde588e7dc49a",
+          "bytes": 11514
+        },
+        "lessons.json": {
+          "path": "dutch/lessons.json",
+          "sha256": "b8277190513e66ca9c4c6decc7e62647f01d2d36623f6594195722b402c4ee6a",
+          "bytes": 15279
+        }
+      }
+    },
+    {
+      "id": "hebrew",
+      "name": "Hebrew",
+      "flag": "🇮🇱",
+      "version": 1,
+      "sentences": 171,
+      "lessons": 13,
+      "files": {
+        "lang.json": {
+          "path": "hebrew/lang.json",
+          "sha256": "d29b7ea6ecd7162d42fa81b53e286c0a7bc8a77ccaee654096c08baf4b15a5f8",
+          "bytes": 1743
+        },
+        "sentences.json": {
+          "path": "hebrew/sentences.json",
+          "sha256": "5f376c2d1a1e6f1b2192fb7e5f3ea1fecf08967f7e9d6aae7e6fd74dadee36f6",
+          "bytes": 36089
+        },
+        "bridges.json": {
+          "path": "hebrew/bridges.json",
+          "sha256": "acfdd6fcd39dd5f75cb084a4b6090c29e8457ecd52fa7461ddd0d9c6a32725e0",
+          "bytes": 5004
+        },
+        "lessons.json": {
+          "path": "hebrew/lessons.json",
+          "sha256": "da15f17a7bdc3ffafdc41850c360a4c2439dc864839d33140f7afd66dad68a1f",
+          "bytes": 13508
+        }
+      }
+    },
+    {
+      "id": "italian",
+      "name": "Italian",
+      "flag": "🇮🇹",
+      "version": 1,
+      "sentences": 179,
+      "lessons": 13,
+      "files": {
+        "lang.json": {
+          "path": "italian/lang.json",
+          "sha256": "d3c70e77b19ffa9340d447174a5f3ec8ad30d0ed0f482f3800a36c302a3d7ff9",
+          "bytes": 1782
+        },
+        "sentences.json": {
+          "path": "italian/sentences.json",
+          "sha256": "119379d4667ff2daba75ea4a4e66da20e7db6ce1db90d92ce91d3bd73c641175",
+          "bytes": 42258
+        },
+        "bridges.json": {
+          "path": "italian/bridges.json",
+          "sha256": "f92ca71c9b1cb6d17d56de887c7dfab709213fa3819ed0c493dbdacff3ba09c0",
+          "bytes": 18344
+        },
+        "lessons.json": {
+          "path": "italian/lessons.json",
+          "sha256": "20ccc8e38daec54b93ec3d75622ce6840627e77eef4bb09898ecf1d9c299900d",
+          "bytes": 16448
+        }
+      }
+    },
+    {
+      "id": "spanish",
+      "name": "Spanish",
+      "flag": "🇲🇽",
+      "version": 1,
+      "sentences": 172,
+      "lessons": 13,
+      "files": {
+        "lang.json": {
+          "path": "spanish/lang.json",
+          "sha256": "e74fafbf78748dfbb925d4211bfec66a7a0a3ebf2be5404b5afc5c98c4abab43",
+          "bytes": 1733
+        },
+        "sentences.json": {
+          "path": "spanish/sentences.json",
+          "sha256": "f996bb6ccf1947721a0cafdc0cf3266bd987e5afe79993d29c4899e8b5190df2",
+          "bytes": 45541
+        },
+        "bridges.json": {
+          "path": "spanish/bridges.json",
+          "sha256": "b1e9805f7b14ad3d9fe9806e03b62f0b5adc92e2606682a2346aaaec526f6516",
+          "bytes": 18309
+        },
+        "lessons.json": {
+          "path": "spanish/lessons.json",
+          "sha256": "0b0bb2a29008cf683b5ec2066ae84a426732297b0c804854eaffe7fa35bf9a0d",
+          "bytes": 17443
+        }
+      }
+    },
+    {
+      "id": "swiss",
+      "name": "Swiss German",
+      "flag": "🇨🇭",
+      "version": 1,
+      "sentences": 169,
+      "lessons": 13,
+      "files": {
+        "lang.json": {
+          "path": "swiss/lang.json",
+          "sha256": "83cf9c2f24423524dd55fd417601c867560a1f330069897487bdb4d50998132a",
+          "bytes": 1800
+        },
+        "sentences.json": {
+          "path": "swiss/sentences.json",
+          "sha256": "778012be3f8382c38f8e793150e846a7d7230fd36349b157cf4e36c49a049ab8",
+          "bytes": 37987
+        },
+        "bridges.json": {
+          "path": "swiss/bridges.json",
+          "sha256": "a5811b98333ee42049442e9d7169e7f5be411ba1da721bc66de118cda572033b",
+          "bytes": 9392
+        },
+        "lessons.json": {
+          "path": "swiss/lessons.json",
+          "sha256": "eb4ef7039eeec0490e7bfc5736f8594143b2cb8e064fabc209d221c996329af1",
+          "bytes": 13642
+        }
+      }
+    }
+  ]
+}

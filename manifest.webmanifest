@@ -19,6 +19,7 @@
     { "name": "Swiss German", "url": "./?lang=gruezi" },
     { "name": "Dutch", "url": "./?lang=hoi" },
     { "name": "Italian", "url": "./?lang=ciao" },
-    { "name": "Hebrew", "url": "./?lang=shalom" }
+    { "name": "Hebrew", "url": "./?lang=shalom" },
+    { "name": "Spanish", "url": "./?lang=spanish" }
   ]
 }

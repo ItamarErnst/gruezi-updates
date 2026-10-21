@@ -1,5 +1,5 @@
 /**
- * The shell — and, unlike the phone builds, the shell for all four languages.
+ * The shell — and, unlike the phone builds, the shell for every language.
  *
  * On Android each language is its own APK off its own branch. Here they share one
  * deploy: the learner picks a language on first run, that choice selects both the

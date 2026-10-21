@@ -1,6 +1,6 @@
 {
   "channel": "gruezi",
-  "generated": "2026-10-07T07:08:26+00:00",
+  "generated": "2026-10-21T08:17:01+00:00",
   "content": {
     "version": 3,
     "files": {
@@ -25,11 +25,11 @@
     }
   },
   "app": {
-    "versionCode": 8,
-    "versionName": "0.8",
-    "notes": "Each sentence is rated once a day. When everything due is rated you'll see 'All done for today', with Learn one more and Practice anyway (no rating).",
-    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.8/gruezi-8.apk",
-    "sha256": "8a30b21087055195654d5ec04d2209c1a208b547ba8d8da177cfb058c9d07c98",
-    "bytes": 31900203
+    "versionCode": 9,
+    "versionName": "0.9",
+    "notes": "One app for every language: Swiss German, Dutch, Hebrew, Italian and the new Spanish — download the ones you want from the menu. Audio removed.",
+    "path": "https://github.com/ItamarErnst/gruezi-updates/releases/download/gruezi-v0.9/gruezi-9.apk",
+    "sha256": "312291cf24925ab6f8951e83e52a4cb0669e508b7c45e51458207270b289b2a2",
+    "bytes": 31166844
   }
 }
